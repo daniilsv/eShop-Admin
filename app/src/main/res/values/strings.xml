@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name" translatable="false">eShop - Administrator</string>
+    <string name="host">Host</string>
+    <string name="email" translatable="false">eMail</string>
+    <string name="password">Password</string>
+    <string name="enter">Enter</string>
+    <string name="enter_success">Operation Successful</string>
+    <string name="enter_wrong_pass">Login or password is incorrect</string>
+    <string name="enter_error">Connection error</string>
+    <string name="no_more_content">There is no more content</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="enter_failed">Operation Failed</string>
+    <string name="enter_wait">Wait for answer</string>
+    <string name="no_internet">No connection to the Internet</string>
+</resources>

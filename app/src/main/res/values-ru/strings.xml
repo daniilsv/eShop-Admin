@@ -1,0 +1,14 @@
+<resources>
+    <string name="host">Хост</string>
+    <string name="password">Пароль</string>
+    <string name="enter">Войти</string>
+    <string name="enter_wrong_pass">Логин или пароль неверен</string>
+    <string name="enter_success">Операция выполнена успешно</string>
+    <string name="enter_error">Ошибка при подключении</string>
+    <string name="enter_failed">Операция выполнена неудачно</string>
+    <string name="no_internet">Нет подключения к сети интернет</string>
+    <string name="navigation_drawer_close">Закрыть</string>
+    <string name="navigation_drawer_open">Открыть</string>
+    <string name="enter_wait">Ожидайте</string>
+    <string name="no_more_content">Все записи уже загружены</string>
+</resources>
