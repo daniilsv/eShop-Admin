@@ -3,29 +3,27 @@ package ru.dvs.eshop.admin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.io.File;
 
-import ru.dvs.eshop.R;
-import ru.dvs.eshop.admin.data.network.FILEQuery;
+import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.ui.activities.MainActivity;
 
 
+//TODO: Упразднить класс. Раскидать функции по соответствующим пакетам
+
 /**
  * Ядро системы.
- * Объединяет все компоненты.
- * Дает доступ к функциям.
+ * Пока еще Дает доступ к некоторым функциям.
  **/
 public class Core {
-    public final static String version = "1.0";
+    public final static String version = "0.0.2";
+    public final static int versionI = 2;
     private static Core ourInstance = null;
     public Context context;
     public Activity activity;
     private DB db = null;
-    private SharedPreferences prefs = null;
 
     private Core() {
 
@@ -42,20 +40,14 @@ public class Core {
         return Core.getInstance().context.getResources().getString(res_id);
     }
 
-    //Получает(создает) кэш-папку приложения (...(SDCARD).../Android/data/ru.daniils.dvscommerce/)
+    //Получает(создает) кэш-папку приложения (...(SDCARD).../Android/data/ru.dvs.eshop.admin/)
     public static String getStorageDir() {
         if (ourInstance == null)
             return "";
         File file = ourInstance.context.getExternalFilesDir(null);
-        new File(file, "favicons").mkdirs();
+        new File(file, "images").mkdirs();
+        new File(file, "cache").mkdirs();
         return file != null ? file.getPath() : null;
-    }
-
-    //Позволяет загрузить файл с сайта по имени хоста и расположения на нем и сохранить в некоторую папку на устройстве
-    public static File loadFile(String host, String source, String dest) {
-        FILEQuery fq = new FILEQuery(host + source, getStorageDir() + dest);
-        fq.get();
-        return fq.getResult();
     }
 
     //Показывает Toast уведомление из строки
@@ -69,18 +61,15 @@ public class Core {
     }
 
     //Запускает соединение и БД приложения
-    public void start(Context _context) {
-        if (_context == null)
+    public void start(Activity _activity) {
+        setActivity(_activity);
+        if (_activity == null)
             return;
-        context = _context;
         if (db == null) {//БД
             db = DB.getInstance();
             db.setContext(context);
             db.connect();
         }
-        if (prefs == null)//Настройки
-            prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
     }
 
     //Устанавливает текущее активити
@@ -91,44 +80,4 @@ public class Core {
         context = _activity;
     }
 
-    //Класс проверяет строку (ответ от сервера) на ошибки и показывает уведомление при их наличии.
-    //Завершает работу текущего соединения.
-    private static class CheckConnectionFails extends Thread {
-        private String result;
-        private boolean ended = false;
-
-        CheckConnectionFails(String _result) {
-            result = _result;
-        }
-
-        public void run() {
-            if (result == null || result.equals("NULL")) {
-                makeToast(R.string.no_internet, true);
-                result = null;
-            } else if (result.contains("RC: ")) {
-                makeToast(String.format("%s: %s", Core.getString(R.string.enter_error), result.substring(4)), false);
-                result = null;
-            } else if (result.contains("<html")) {
-                makeToast(String.format("%s Wrong request", Core.getString(R.string.enter_error)), false);
-                result = null;
-            } else if (result.equals("false")) {
-                makeToast(R.string.no_more_content, false);
-                result = null;
-            }
-            ended = true;
-        }
-
-        String getResult() {
-            //"Правильный" join и возврат результата
-            try {
-                while (!ended)
-                    Thread.sleep(300);
-                join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-    }
 }

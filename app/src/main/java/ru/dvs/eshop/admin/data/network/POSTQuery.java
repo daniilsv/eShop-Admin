@@ -1,6 +1,6 @@
 package ru.dvs.eshop.admin.data.network;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,10 +20,16 @@ import java.net.URLEncoder;
 import ru.dvs.eshop.admin.utils.Encode;
 import ru.dvs.eshop.admin.utils.Utils;
 
+//TODO: Переделать систему шифрования
+//TODO: Добавить систему сжатия данных
+
+/**
+ * Асинхронное подключение к API сайта с последующим возвращением бродкаста в активность
+ */
 public class POSTQuery extends AsyncTask<Void, Void, Void> {
     private static final String POST_XOR_KEY = "cebce3d1a8b98c7cdfcb88e10ebdd096";
 
-    private Context mContext;
+    private Activity mActivity;
     private String mActivityAction;
     private String mToken;
     private JSONObject mJsonObj;
@@ -33,22 +39,22 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
     private int mStatus = 0;
     private String mResponse = "";
 
-    public POSTQuery(Context context, String site, String activityAction, String token) {
-        mContext = context;
+    public POSTQuery(Activity activity, String site, String activityAction, String token) {
+        mActivity = activity;
         mSite = site;
         mActivityAction = activityAction;
-        mAppId = Utils.getUniqueID();
+        mAppId = Utils.getUniqueID(mActivity);
         mToken = token;
         mJsonObj = new JSONObject();
         put("app_id", mAppId);
         put("token", mToken);
     }
 
-    public POSTQuery(Context context, String site, String activityAction) {
-        mContext = context;
+    public POSTQuery(Activity activity, String site, String activityAction) {
+        mActivity = activity;
         mSite = site;
         mActivityAction = activityAction;
-        mAppId = Utils.getUniqueID();
+        mAppId = Utils.getUniqueID(mActivity);
         mToken = null;
         mJsonObj = new JSONObject();
         put("app_id", mAppId);
@@ -57,13 +63,13 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
     public void put(String a, String b) {
         try {
             mJsonObj.put(a, b);
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
-        if (!Utils.hasConnection()) {
+        if (!Utils.hasConnection(mActivity)) {
             mStatus = 1;
             mResponse = "10";
             Log.e("AsyncPOST", "mStatus = " + mStatus);
@@ -93,7 +99,7 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         Intent intent = new Intent(mActivityAction);
         intent.putExtra("status", mStatus);
         intent.putExtra("response", mResponse);
-        mContext.sendBroadcast(intent);
+        mActivity.sendBroadcast(intent);
     }
 
     //Посылаем POST запрос на сайт в текущем потоке

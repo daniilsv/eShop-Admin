@@ -18,7 +18,7 @@ import ru.dvs.eshop.admin.Core;
 
 /**
  * Главная активность приложения
- **/
+ */
 public class MainActivity extends AppCompatActivity {
     private static Fragment curFragment;
     //private static InfoFragment infoFragment = null;
@@ -30,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(this, StartActivity.class));
         setContentView(R.layout.activity_main);
 
         core = Core.getInstance();
-        core.setActivity(this);
+        core.start(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     //При возвращении из другой активности
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       /*
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
 
         }
+        */
     }
 
     //При нажатии кнопки назад
@@ -134,13 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            curFragment = null;
+            /*curFragment = null;
             switch (item.getItemId()) {
-               /* case R.id.menu_summary:
+                case R.id.menu_summary:
                     curFragment = (infoFragment != null) ? infoFragment : (infoFragment = new InfoFragment());
                     toolbar.setTitle(Core.getString(R.string.menu_info));
-                    break;*/
-            }
+                    break;
+            }*/
             //Устанавливаем новый фрагмент
             if (curFragment != null)
                 getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();

@@ -5,13 +5,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+//TODO: Переделать на подобие
 
-import ru.dvs.eshop.admin.utils.Utils;
-
+/**
+ * @see POSTQuery
+ */
 //Удобный класс скачивания файла с сайта на устройство
 public class FILEQuery extends Thread {
-    File result;
-    String url;
+    private File result;
+    private String url;
 
     public FILEQuery(String _url, String destination) {
         url = _url;
@@ -34,8 +36,8 @@ public class FILEQuery extends Thread {
     }
 
     public void get() {
-        if (Utils.hasConnection())
-            start();
+        //if (Utils.hasConnection())
+        start();
     }
 
     public File getResult() {

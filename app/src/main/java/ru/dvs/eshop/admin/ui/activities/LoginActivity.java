@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,18 +19,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.data.Preferences;
 import ru.dvs.eshop.admin.data.network.POSTQuery;
 import ru.dvs.eshop.admin.utils.Encode;
 
-public class StartActivity extends AppCompatActivity {
+//TODO: Переделать функционал кнопки назад
+//TODO: Сделать дизайн и "перетекание частей"
+
+/**
+ * Активность аутентификации.
+ * Пинг, логин, получение и проверка статуса токена.
+ */
+public class LoginActivity extends AppCompatActivity {
     private LinearLayout siteLayout, userLayout, responseLayout;
-    private String site, email, pass_md5;
     private int curAction;
     private ImageView responseImage;
     private TextView responseText;
-    private ImageButton backButton;
-
-    private String token;
+    private String site = null;
+    private String token = null;
 
     private BroadcastReceiver pingReceiver = new BroadcastReceiver() {
         @Override
@@ -43,11 +49,10 @@ public class StartActivity extends AppCompatActivity {
                 siteLayout.setVisibility(View.GONE);
                 userLayout.setVisibility(View.VISIBLE);
                 curAction = 1;
-                unregisterReceiver(pingReceiver);
-            } else {
+            } else {/*
                 switch (Integer.parseInt(response)) {
 
-                }
+                }*/
                 siteLayout.setVisibility(View.GONE);
                 responseLayout.setVisibility(View.VISIBLE);
                 setResponseData(R.drawable.reject, R.string.start_ping_failed, false);
@@ -64,15 +69,17 @@ public class StartActivity extends AppCompatActivity {
 
             if (status == 0 && Encode.isValidMD5(response)) {
                 token = response;
-                userLayout.setVisibility(View.GONE);
-                responseLayout.setVisibility(View.VISIBLE);
+                Preferences.setString("site", site);
+                Preferences.setString("token", token);
+                Preferences.setInt("login_status", 1);
                 curAction = 2;
                 setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
-                unregisterReceiver(loginReceiver);
-            } else {
+                userLayout.setVisibility(View.GONE);
+                responseLayout.setVisibility(View.VISIBLE);
+            } else {/*
                 switch (Integer.parseInt(response)) {
 
-                }
+                }*/
                 userLayout.setVisibility(View.GONE);
                 responseLayout.setVisibility(View.VISIBLE);
                 setResponseData(R.drawable.reject, R.string.start_login_failed, false);
@@ -92,18 +99,21 @@ public class StartActivity extends AppCompatActivity {
 
                 try {
                     JSONObject node = new JSONObject(response);
-                    String status_text = node.getString("status_text");
-                    Log.e("checkReceiver", "status_text = " + status_text);
-
+                    int token_status = node.getInt("status");
+                    if (token_status == 1) {
+                        Preferences.setInt("login_status", 2);
+                        curAction = 3;
+                        setResponseData(R.drawable.accept, R.string.start_success, true);
+                    } else
+                        setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
-            } else {
+            } else {/*
                 switch (Integer.parseInt(response)) {
 
-                }
+                }*/
                 userLayout.setVisibility(View.GONE);
                 responseLayout.setVisibility(View.VISIBLE);
                 setResponseData(R.drawable.reject, R.string.start_login_failed, false);
@@ -114,16 +124,13 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
-
+        setContentView(R.layout.activity_login);
         siteLayout = (LinearLayout) findViewById(R.id.site_layout);
         userLayout = (LinearLayout) findViewById(R.id.user_layout);
         responseLayout = (LinearLayout) findViewById(R.id.response_layout);
         responseImage = (ImageView) findViewById(R.id.response_image);
         responseText = (TextView) findViewById(R.id.response_text);
-        backButton = (ImageButton) findViewById(R.id.back_button);
-        siteLayout.setVisibility(View.VISIBLE);
-        curAction = 0;
+        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
         Button next1 = (Button) findViewById(R.id.start_next1_button);
         Button next2 = (Button) findViewById(R.id.start_next2_button);
         Button next3 = (Button) findViewById(R.id.start_next3_button);
@@ -155,6 +162,27 @@ public class StartActivity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+
+
+        site = Preferences.getString("site");
+        token = Preferences.getString("token");
+        switch (Preferences.getInt("login_status")) {
+            case 0:
+                siteLayout.setVisibility(View.VISIBLE);
+                curAction = 0;
+                break;
+            case 1:
+                curAction = 2;
+                setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
+                responseLayout.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                curAction = 3;
+                setResponseData(R.drawable.accept, R.string.start_success, true);
+                responseLayout.setVisibility(View.VISIBLE);
+                break;
+        }
+
     }
 
     private void pingAndSwipeNext() {
@@ -172,8 +200,8 @@ public class StartActivity extends AppCompatActivity {
         EditText emailEditText = (EditText) findViewById(R.id.email);
         EditText passEditText = (EditText) findViewById(R.id.password);
         if (emailEditText != null && passEditText != null) {
-            email = emailEditText.getText().toString();
-            pass_md5 = Encode.MD5(passEditText.getText().toString());
+            String email = emailEditText.getText().toString();
+            String pass_md5 = Encode.MD5(passEditText.getText().toString());
 
             POSTQuery task = new POSTQuery(this, site, "login");
             task.put("controller", "users");
@@ -185,12 +213,22 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void setResponseData(int img_id, int str_id, boolean is_next_visible) {
-        responseImage.setImageDrawable(this.getResources().getDrawable(img_id));
+        if (Build.VERSION.SDK_INT >= 23)
+            responseImage.setImageDrawable(this.getResources().getDrawable(img_id, null));
+        else
+            responseImage.setImageDrawable(this.getResources().getDrawable(img_id));
         responseText.setText(str_id);
-        //responseNext.setVisibility(is_next_visible ? View.VISIBLE : View.GONE);
+        View sn3b = findViewById(R.id.start_next3_button);
+        if (sn3b != null)
+            sn3b.setVisibility(is_next_visible ? View.VISIBLE : View.GONE);
     }
 
     private void responseAndSwipeNext() {
+        if (curAction == 3) {
+            this.startActivity(new Intent(this, MainActivity.class));
+            this.finish();
+            return;
+        }
         POSTQuery task = new POSTQuery(this, site, "check", token);
         task.put("controller", "api");
         task.put("method", "get_token_info");
@@ -200,8 +238,6 @@ public class StartActivity extends AppCompatActivity {
     //При нажатии кнопки назад
     @Override
     public void onBackPressed() {
-        if (curAction == -1)
-            super.onBackPressed();
         responseLayout.setVisibility(View.GONE);
         switch (curAction) {
             case 0:
@@ -210,8 +246,15 @@ public class StartActivity extends AppCompatActivity {
             case 1:
                 userLayout.setVisibility(View.VISIBLE);
                 break;
+            case 2:
+            case 3:
+                siteLayout.setVisibility(View.VISIBLE);
+                curAction = 1;
+                break;
         }
         curAction--;
+        if (curAction == -1)
+            super.onBackPressed();
     }
 
     @Override

@@ -14,9 +14,10 @@
     <string name="enter_wait">Wait for answer</string>
     <string name="no_internet">No connection to the Internet</string>
 
-    <string name="start_ping_failed">No connection to the Internet</string>
-    <string name="start_wait_for_token">No connection to the Internet</string>
-    <string name="start_login_failed">No connection to the Internet</string>
+    <string name="start_ping_failed">(SMTH like "Sorry, but it seems that web site is down")</string>
+    <string name="start_wait_for_token">(SMTH like "Yay! Ask admin to activate your token")</string>
+    <string name="start_login_failed">(SMTH like "Sorry, but your login or password is incorrect. Try again")</string>
+    <string name="start_success">(SMTH like "And now you can use this app")</string>
 
 
 </resources>
