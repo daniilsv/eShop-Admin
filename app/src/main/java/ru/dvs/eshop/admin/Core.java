@@ -8,9 +8,10 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.Map;
 
-import ru.dvs.eshop.admin.activities.MainActivity;
+import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.data.network.FILEQuery;
+import ru.dvs.eshop.admin.ui.activities.MainActivity;
 
 
 /**
@@ -24,7 +25,6 @@ public class Core {
     public Context context;
     public Activity activity;
     private DB db = null;
-    private Connection conn = null;
     private SharedPreferences prefs = null;
 
     private Core() {
@@ -35,38 +35,6 @@ public class Core {
         if (ourInstance == null)
             ourInstance = new Core();
         return ourInstance;
-    }
-
-    //Позволяет получить информацию с сайты по имени хоста и токену
-    public static String get(String host, String token, Map<String, String> data) {
-        Connection.POSTQuery query = new Connection.POSTQuery(host, "get");
-        query.put("token", token);
-        if (data != null) {
-            for (String s : data.keySet()) {
-                query.put(s, data.get(s));
-            }
-        }
-        query.send();
-        String result = query.getResult();
-        CheckConnectionFails ccf = new CheckConnectionFails(result);
-        Core.getInstance().activity.runOnUiThread(ccf);
-        return ccf.getResult();
-    }
-
-    //Позволяет установить параметры data на сайте по имени хоста и токену
-    public static String set(String host, String token, Map<String, String> data) {
-        Connection.POSTQuery query = new Connection.POSTQuery(host, "set");
-        query.put("token", token);
-        if (data != null) {
-            for (String s : data.keySet()) {
-                query.put(s, data.get(s));
-            }
-        }
-        query.send();
-        String result = query.getResult();
-        CheckConnectionFails ccf = new CheckConnectionFails(result);
-        Core.getInstance().activity.runOnUiThread(ccf);
-        return ccf.getResult();
     }
 
     //Простое получение строки из ресурсов приложения
@@ -85,7 +53,7 @@ public class Core {
 
     //Позволяет загрузить файл с сайта по имени хоста и расположения на нем и сохранить в некоторую папку на устройстве
     public static File loadFile(String host, String source, String dest) {
-        Connection.FILEQuery fq = new Connection.FILEQuery(host + source, getStorageDir() + dest);
+        FILEQuery fq = new FILEQuery(host + source, getStorageDir() + dest);
         fq.get();
         return fq.getResult();
     }
@@ -100,25 +68,11 @@ public class Core {
         Toast.makeText(Core.getInstance().context, Core.getString(res_id), is_long ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
     }
 
-    //Позволяет подключиться к хосту по имени хоста, логину и MD5-кешу пароля для получения токена
-    public static String loginToHost(String host, String email, String passwordMD5) {
-        Connection.POSTQuery query = new Connection.POSTQuery(host, "auth");
-        query.put("email", email);
-        query.put("password", passwordMD5);
-        query.send();
-        String result = query.getResult();
-        CheckConnectionFails ccf = new CheckConnectionFails(result);
-        Core.getInstance().activity.runOnUiThread(ccf);
-        return ccf.getResult();
-    }
-
     //Запускает соединение и БД приложения
     public void start(Context _context) {
         if (_context == null)
             return;
         context = _context;
-        if (conn == null)//Соединения
-            conn = Connection.getInstance();
         if (db == null) {//БД
             db = DB.getInstance();
             db.setContext(context);
@@ -136,7 +90,6 @@ public class Core {
         activity = _activity;
         context = _activity;
     }
-
 
     //Класс проверяет строку (ответ от сервера) на ошибки и показывает уведомление при их наличии.
     //Завершает работу текущего соединения.

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startActivity(new Intent(this, StartActivity.class));
         setContentView(R.layout.activity_main);
 
         core = Core.getInstance();
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         //Посылаем в фрагмент команду обновиться
         //if (curFragment instanceof InfoFragment) {
         //    infoFragment.refresh();
-       // }
+        // }
     }
 
     //Переподключает текущий фрагмент

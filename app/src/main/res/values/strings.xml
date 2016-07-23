@@ -13,4 +13,10 @@
     <string name="enter_failed">Operation Failed</string>
     <string name="enter_wait">Wait for answer</string>
     <string name="no_internet">No connection to the Internet</string>
+
+    <string name="start_ping_failed">No connection to the Internet</string>
+    <string name="start_wait_for_token">No connection to the Internet</string>
+    <string name="start_login_failed">No connection to the Internet</string>
+
+
 </resources>
