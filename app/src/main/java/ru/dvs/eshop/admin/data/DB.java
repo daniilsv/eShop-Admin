@@ -117,7 +117,7 @@ public class DB {
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.d(LOG_TAG, "--- onCreate database ---");
-/*
+
             Log.d(LOG_TAG, "--- Create landings");
             db.execSQL("CREATE TABLE landings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -132,7 +132,7 @@ public class DB {
                     "published INTEGER NOT NULL);" +
                     "CREATE UNIQUE INDEX uniq ON landings(site_id, name);"
             );
-*/
+
         }
 
         //При обновлении приложения

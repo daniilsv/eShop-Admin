@@ -1,7 +1,10 @@
 package ru.dvs.eshop.admin.ui.activities;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,11 +12,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.data.Preferences;
+import ru.dvs.eshop.admin.data.network.POSTQuery;
 
 
 /**
@@ -26,6 +32,21 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private Core core;
+
+    private BroadcastReceiver pingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            int status = intent.getIntExtra("status", -1);
+            String response = intent.getStringExtra("response");
+            Log.e("GAGA", response);
+            if (status == 0) {
+
+            } else {
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +83,23 @@ public class MainActivity extends AppCompatActivity {
 
         }
   */
+
+        POSTQuery task = new POSTQuery(this, Preferences.getString("site"), "getItem", Preferences.getString("token"));
+        task.put("controller", "eshop");
+        task.put("method", "get_item");
+        task.execute();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(pingReceiver, new IntentFilter("getItem"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(pingReceiver);
     }
 
     //При возвращении из другой активности
