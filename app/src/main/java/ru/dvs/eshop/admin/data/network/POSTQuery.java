@@ -1,7 +1,5 @@
 package ru.dvs.eshop.admin.data.network;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,6 +15,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.utils.Encode;
 import ru.dvs.eshop.admin.utils.Utils;
 
@@ -24,37 +23,29 @@ import ru.dvs.eshop.admin.utils.Utils;
 //TODO: Добавить систему сжатия данных
 
 /**
- * Асинхронное подключение к API сайта с последующим возвращением бродкаста в активность
+ * Асинхронное подключение к API сайта
  */
 public class POSTQuery extends AsyncTask<Void, Void, Void> {
     private static final String POST_XOR_KEY = "cebce3d1a8b98c7cdfcb88e10ebdd096";
-
-    private Activity mActivity;
-    private String mActivityAction;
+    protected int status = 0;
+    protected String response = "";
     private String mToken;
     private JSONObject mJsonObj;
     private String mSite;
     private String mAppId;
 
-    private int mStatus = 0;
-    private String mResponse = "";
-
-    public POSTQuery(Activity activity, String site, String activityAction, String token) {
-        mActivity = activity;
+    public POSTQuery(String site, String token) {
         mSite = site;
-        mActivityAction = activityAction;
-        mAppId = Utils.getUniqueID(mActivity);
+        mAppId = Utils.getUniqueID(Core.getInstance().context);
         mToken = token;
         mJsonObj = new JSONObject();
         put("app_id", mAppId);
         put("token", mToken);
     }
 
-    public POSTQuery(Activity activity, String site, String activityAction) {
-        mActivity = activity;
+    public POSTQuery(String site) {
         mSite = site;
-        mActivityAction = activityAction;
-        mAppId = Utils.getUniqueID(mActivity);
+        mAppId = Utils.getUniqueID(Core.getInstance().context);
         mToken = null;
         mJsonObj = new JSONObject();
         put("app_id", mAppId);
@@ -69,37 +60,29 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        if (!Utils.hasConnection(mActivity)) {
-            mStatus = 1;
-            mResponse = "10";
-            Log.e("AsyncPOST", "mStatus = " + mStatus);
-            Log.e("AsyncPOST", "mResponse = " + mResponse);
+        if (!Utils.hasConnection(Core.getInstance().context)) {
+            status = 1;
+            response = "10";
+            Log.e("AsyncPOST", "mStatus = " + status);
+            Log.e("AsyncPOST", "mResponse = " + response);
             return null;
         }
         String result;
         try {
             result = sendPOST(mSite + "/api", mJsonObj);
             JSONObject node = new JSONObject(result);
-            mStatus = node.getInt("status");
-            mResponse = node.getString("response");
+            status = node.getInt("status");
+            response = node.getString("response");
         } catch (IOException e) {
-            mStatus = 1;
-            mResponse = "11";
+            status = 1;
+            response = "11";
         } catch (JSONException e) {
-            mStatus = 1;
-            mResponse = "12";
+            status = 1;
+            response = "12";
         }
-        Log.e("AsyncPOST", "mStatus = " + mStatus);
-        Log.e("AsyncPOST", "mResponse = " + mResponse);
+        Log.e("AsyncPOST", "mStatus = " + status);
+        Log.e("AsyncPOST", "mResponse = " + response);
         return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void voids) {
-        Intent intent = new Intent(mActivityAction);
-        intent.putExtra("status", mStatus);
-        intent.putExtra("response", mResponse);
-        mActivity.sendBroadcast(intent);
     }
 
     //Посылаем POST запрос на сайт в текущем потоке

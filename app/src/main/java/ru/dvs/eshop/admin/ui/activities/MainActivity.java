@@ -18,8 +18,6 @@ import android.view.MenuItem;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.data.Preferences;
-import ru.dvs.eshop.admin.data.network.POSTQuery;
 
 
 /**
@@ -84,10 +82,6 @@ public class MainActivity extends AppCompatActivity {
         }
   */
 
-        POSTQuery task = new POSTQuery(this, Preferences.getString("site"), "getItem", Preferences.getString("token"));
-        task.put("controller", "eshop");
-        task.put("method", "get_item");
-        task.execute();
     }
 
     @Override

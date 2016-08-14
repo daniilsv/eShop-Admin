@@ -1,9 +1,6 @@
 package ru.dvs.eshop.admin.ui.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.Preferences;
 import ru.dvs.eshop.admin.data.network.POSTQuery;
 import ru.dvs.eshop.admin.utils.Encode;
@@ -37,89 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextView responseText;
     private String site = null;
     private String token = null;
-
-    private BroadcastReceiver pingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int status = intent.getIntExtra("status", -1);
-            String response = intent.getStringExtra("response");
-
-            if (status == 0) {
-                siteLayout.setVisibility(View.GONE);
-                userLayout.setVisibility(View.VISIBLE);
-                curAction = 1;
-            } else {/*
-                switch (Integer.parseInt(response)) {
-
-                }*/
-                siteLayout.setVisibility(View.GONE);
-                responseLayout.setVisibility(View.VISIBLE);
-                setResponseData(R.drawable.reject, R.string.start_ping_failed, false);
-            }
-        }
-    };
-
-    private BroadcastReceiver loginReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int status = intent.getIntExtra("status", -1);
-            String response = intent.getStringExtra("response");
-
-            if (status == 0 && Encode.isValidMD5(response)) {
-                token = response;
-                Preferences.setString("site", site);
-                Preferences.setString("token", token);
-                Preferences.setInt("login_status", 1);
-                curAction = 2;
-                setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
-                userLayout.setVisibility(View.GONE);
-                responseLayout.setVisibility(View.VISIBLE);
-            } else {/*
-                switch (Integer.parseInt(response)) {
-
-                }*/
-                userLayout.setVisibility(View.GONE);
-                responseLayout.setVisibility(View.VISIBLE);
-                setResponseData(R.drawable.reject, R.string.start_login_failed, false);
-            }
-        }
-    };
-
-    private BroadcastReceiver checkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int status = intent.getIntExtra("status", -1);
-            String response = intent.getStringExtra("response");
-
-            if (status == 0) {
-                curAction = 2;
-
-                try {
-                    JSONObject node = new JSONObject(response);
-                    int token_status = node.getInt("status");
-                    if (token_status == 1) {
-                        Preferences.setInt("login_status", 2);
-                        curAction = 3;
-                        setResponseData(R.drawable.accept, R.string.start_success, true);
-                    } else
-                        setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            } else {/*
-                switch (Integer.parseInt(response)) {
-
-                }*/
-                userLayout.setVisibility(View.GONE);
-                responseLayout.setVisibility(View.VISIBLE);
-                setResponseData(R.drawable.reject, R.string.start_login_failed, false);
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
             });
 
 
+        Core.getInstance().setActivity(this);
+
         site = Preferences.getString("site");
         token = Preferences.getString("token");
         switch (Preferences.getInt("login_status")) {
@@ -189,7 +106,20 @@ public class LoginActivity extends AppCompatActivity {
         EditText siteEditText = (EditText) findViewById(R.id.site);
         if (siteEditText != null) {
             site = siteEditText.getText().toString();
-            POSTQuery task = new POSTQuery(this, site, "ping");
+            POSTQuery task = new POSTQuery(site) {
+                @Override
+                protected void onPostExecute(Void voids) {
+                    if (status == 0) {
+                        siteLayout.setVisibility(View.GONE);
+                        userLayout.setVisibility(View.VISIBLE);
+                        curAction = 1;
+                    } else {
+                        siteLayout.setVisibility(View.GONE);
+                        responseLayout.setVisibility(View.VISIBLE);
+                        setResponseData(R.drawable.reject, R.string.start_ping_failed, false);
+                    }
+                }
+            };
             task.put("controller", "api");
             task.put("method", "ping");
             task.execute();
@@ -203,7 +133,25 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailEditText.getText().toString();
             String pass_md5 = Encode.MD5(passEditText.getText().toString());
 
-            POSTQuery task = new POSTQuery(this, site, "login");
+            POSTQuery task = new POSTQuery(site, "login") {
+                @Override
+                protected void onPostExecute(Void voids) {
+                    if (status == 0 && Encode.isValidMD5(response)) {
+                        token = response;
+                        Preferences.setString("site", site);
+                        Preferences.setString("token", token);
+                        Preferences.setInt("login_status", 1);
+                        curAction = 2;
+                        setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
+                        userLayout.setVisibility(View.GONE);
+                        responseLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        userLayout.setVisibility(View.GONE);
+                        responseLayout.setVisibility(View.VISIBLE);
+                        setResponseData(R.drawable.reject, R.string.start_login_failed, false);
+                    }
+                }
+            };
             task.put("controller", "users");
             task.put("method", "login_api");
             task.put("email", email);
@@ -229,7 +177,32 @@ public class LoginActivity extends AppCompatActivity {
             this.finish();
             return;
         }
-        POSTQuery task = new POSTQuery(this, site, "check", token);
+        POSTQuery task = new POSTQuery(site, token) {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status == 0) {
+                    curAction = 2;
+
+                    try {
+                        JSONObject node = new JSONObject(response);
+                        int token_status = node.getInt("status");
+                        if (token_status == 1) {
+                            Preferences.setInt("login_status", 2);
+                            curAction = 3;
+                            setResponseData(R.drawable.accept, R.string.start_success, true);
+                        } else
+                            setResponseData(R.drawable.wait, R.string.start_wait_for_token, true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    userLayout.setVisibility(View.GONE);
+                    responseLayout.setVisibility(View.VISIBLE);
+                    setResponseData(R.drawable.reject, R.string.start_login_failed, false);
+                }
+            }
+        };
         task.put("controller", "api");
         task.put("method", "get_token_info");
         task.execute();
@@ -255,23 +228,6 @@ public class LoginActivity extends AppCompatActivity {
         curAction--;
         if (curAction == -1)
             super.onBackPressed();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        registerReceiver(pingReceiver, new IntentFilter("ping"));
-        registerReceiver(loginReceiver, new IntentFilter("login"));
-        registerReceiver(checkReceiver, new IntentFilter("check"));
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(pingReceiver);
-        unregisterReceiver(loginReceiver);
-        unregisterReceiver(checkReceiver);
     }
 
 }
