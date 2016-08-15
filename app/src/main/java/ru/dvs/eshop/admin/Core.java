@@ -8,6 +8,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import ru.dvs.eshop.admin.data.DB;
+import ru.dvs.eshop.admin.data.Site;
 import ru.dvs.eshop.admin.ui.activities.MainActivity;
 
 
@@ -23,6 +24,7 @@ public class Core {
     private static Core ourInstance = null;
     public Context context;
     public Activity activity;
+    public Site site;
     private DB db = null;
 
     private Core() {
@@ -70,6 +72,7 @@ public class Core {
             db.setContext(context);
             db.connect();
         }
+        site = new Site();
     }
 
     //Устанавливает текущее активити

@@ -2,10 +2,12 @@ package ru.dvs.eshop.admin.data.components.eshop;
 
 import java.util.HashMap;
 
+import ru.dvs.eshop.admin.data.components.Model;
+
 /**
  * Производитель
  */
-public class Vendor {
+public class Vendor extends Model {
     int original_id;
     int id;
     boolean is_enabled;

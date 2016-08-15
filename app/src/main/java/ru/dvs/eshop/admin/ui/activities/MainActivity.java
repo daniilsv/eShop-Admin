@@ -1,10 +1,7 @@
 package ru.dvs.eshop.admin.ui.activities;
 
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,7 +9,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,21 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private Core core;
-
-    private BroadcastReceiver pingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int status = intent.getIntExtra("status", -1);
-            String response = intent.getStringExtra("response");
-            Log.e("GAGA", response);
-            if (status == 0) {
-
-            } else {
-
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,18 +63,6 @@ public class MainActivity extends AppCompatActivity {
         }
   */
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        registerReceiver(pingReceiver, new IntentFilter("getItem"));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(pingReceiver);
     }
 
     //При возвращении из другой активности
