@@ -7,10 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -135,8 +135,6 @@ public class BoardFragment extends Fragment {
 
             dragCard.setMaxCardElevation(40);
             dragCard.setCardElevation(clickedCard.getCardElevation());
-            // I know the dragView is a FrameLayout and that is why I can use setForeground below api level 23
-            dragCard.setForeground(clickedView.getResources().getDrawable(R.drawable.card_view_drag_foreground));
         }
 
         @Override

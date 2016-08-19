@@ -16,7 +16,10 @@ public class LoadActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Preferences.setContext(this);
+        startActivity(new Intent(this, MainActivity.class));
+
         if (Preferences.getInt("login_status") == 2) {
             startActivity(new Intent(this, MainActivity.class));
         } else {
