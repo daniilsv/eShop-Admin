@@ -132,6 +132,107 @@ public class DB {
                     "published INTEGER NOT NULL);" +
                     "CREATE UNIQUE INDEX uniq ON landings(site_id, name);"
             );
+            ////////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_categories");
+            db.execSQL("CREATE TABLE cms_eshop_categories (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "title TEXT NOT NULL," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "parent_id INTEGER DEFAULT NULL," +
+                    "description TEXT," +
+                    "icon TEXT," +
+                    "meta_keys TEXT," +
+                    "meta_desc TEXT," +
+                    "url TEXT DEFAULT NULL," +
+                    "tpl TEXT DEFAULT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_categories(site_id, name);"
+            );
+            ///////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_chars");
+            db.execSQL("CREATE TABLE cms_eshop_chars (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "title TEXT NOT NULL," +
+                    "type TEXT NOT NULL," +
+                    "group TEXT NOT NULL," +
+                    "units TEXT NOT NULL," +
+                    "is_custom INTEGER NOT NULL DEFAULT '1'," +
+                    "is_published INTEGER NOT NULL DEFAULT '1'," +
+                    "values TEXT," +
+                    "categories TEXT," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_chars(site_id, name);"
+            );
+            /////////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_delivery_methods");
+            db.execSQL("CREATE TABLE cms_eshop_delivery_methods (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "title TEXT NOT NULL," +
+                    "description TEXT," +
+                    "icon TEXT," +
+                    "price FLOAT DEFAULT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_delivery_methods(site_id, name);"
+            );
+            ////////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_items");
+            db.execSQL("CREATE TABLE cms_eshop_items (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "category_id INTEGER DEFAULT NULL," +
+                    "art_no TEXT DEFAULT NULL," +
+                    "title TEXT NOT NULL," +
+                    "date_pub DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                    "price FLOAT DEFAULT NULL,"  +
+                    "price_old TEXT DEFAULT NULL," +
+                    "quantity FLOAT DEFAULT NULL," +
+                    "desc_short TEXT," +
+                    "desc_full TEXT," +
+                    "vendor_id INTEGER DEFAULT NULL," +
+                    "category_add_id TEXT," +
+                    "img TEXT," +
+                    "images TEXT," +
+                    "chars TEXT," +
+                    "meta_keys TEXT," +
+                    "meta_desc TEXT," +
+                    "url TEXT DEFAULT NULL," +
+                    "tpl TEXT DEFAULT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_items(site_id, name);"
+            );
+            ////////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_payment_types");
+            db.execSQL("CREATE TABLE cms_eshop_payment_types (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "name TEXT DEFAULT NULL," +
+                    "title TEXT DEFAULT NULL," +
+                    "description TEXT," +
+                    "icon TEXT NOT NULL," +
+                    "options TEXT NOT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_payment_types(site_id, name);"
+            );
+            ////////////////////
+            Log.d(LOG_TAG, "--- Create cms_eshop_vendors");
+            db.execSQL("CREATE TABLE cms_eshop_vendors (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "title TEXT DEFAULT NULL," +
+                    "icon TEXT," +
+                    "description TEXT," +
+                    "url TEXT DEFAULT NULL," +
+                    "ordering INTEGER DEFAULT NULL," +
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON cms_eshop_vendors(site_id, name);"
+            );
 
         }
 
