@@ -121,6 +121,7 @@ public class DB {
             Log.d(LOG_TAG, "--- Create com_eshop_categories");
             db.execSQL("CREATE TABLE com_eshop_categories (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT NOT NULL," +
                     "ordering INTEGER DEFAULT NULL," +
@@ -131,12 +132,14 @@ public class DB {
                     "meta_desc TEXT," +
                     "url TEXT DEFAULT NULL," +
                     "tpl TEXT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_categories(original_id);"
             );
             ///////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_chars");
             db.execSQL("CREATE TABLE com_eshop_chars (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT NOT NULL," +
                     "type TEXT NOT NULL," +
@@ -147,31 +150,35 @@ public class DB {
                     "values TEXT," +
                     "categories TEXT," +
                     "ordering INTEGER DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_chars(original_id);"
             );
             /////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_delivery_methods");
             db.execSQL("CREATE TABLE com_eshop_delivery_methods (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "title TEXT NOT NULL," +
                     "description TEXT," +
                     "icon TEXT," +
                     "price FLOAT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_delivery_methods(original_id);"
             );
             ////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_items");
             db.execSQL("CREATE TABLE com_eshop_items (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "category_id INTEGER DEFAULT NULL," +
                     "art_no TEXT DEFAULT NULL," +
                     "title TEXT NOT NULL," +
                     "date_pub DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                    "price FLOAT DEFAULT NULL,"  +
+                    "price FLOAT DEFAULT NULL," +
                     "price_old TEXT DEFAULT NULL," +
                     "quantity FLOAT DEFAULT NULL," +
                     "desc_short TEXT," +
@@ -185,12 +192,14 @@ public class DB {
                     "meta_desc TEXT," +
                     "url TEXT DEFAULT NULL," +
                     "tpl TEXT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_items(original_id);"
             );
             ////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_payment_types");
             db.execSQL("CREATE TABLE com_eshop_payment_types (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "name TEXT DEFAULT NULL," +
@@ -198,19 +207,22 @@ public class DB {
                     "description TEXT," +
                     "icon TEXT NOT NULL," +
                     "options TEXT NOT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_payment_types(original_id);"
             );
             ////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_vendors");
             db.execSQL("CREATE TABLE com_eshop_vendors (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT DEFAULT NULL," +
                     "icon TEXT," +
                     "description TEXT," +
                     "url TEXT DEFAULT NULL," +
                     "ordering INTEGER DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));"
+                    "PRIMARY KEY (`id`));" +
+                    "CREATE UNIQUE INDEX uniq ON com_eshop_vendors(original_id);"
             );
 
         }
