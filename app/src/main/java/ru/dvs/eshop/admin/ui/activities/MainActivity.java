@@ -1,26 +1,27 @@
 package ru.dvs.eshop.admin.ui.activities;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.ui.activities.draggableListView.BoardFragment;
 
 
 /**
  * Главная активность приложения
  */
 public class MainActivity extends AppCompatActivity {
-    private static Fragment curFragment;
     //private static InfoFragment infoFragment = null;
 
     private Toolbar toolbar;
@@ -42,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         if (drawer == null) {
             return;
         }
+        if (savedInstanceState == null) {
+            reattachCurFragment(BoardFragment.newInstance());
+        }
+
 
         NavigationView leftNavMenu = (NavigationView) findViewById(R.id.nav_menu);
         if (leftNavMenu == null) {
@@ -118,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Обновление текуущего фрагмента
     private void refreshCurFragment() {
-        if (curFragment == null)
-            return;
+        //if (curFragment == null)
+        //return;
         //Посылаем в фрагмент команду обновиться
         //if (curFragment instanceof InfoFragment) {
         //    infoFragment.refresh();
@@ -127,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Переподключает текущий фрагмент
-    public void reattachCurFragment() {
-        getFragmentManager().beginTransaction().detach(curFragment).attach(curFragment).commit();
+    public void reattachCurFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment, "fragment").commit();
     }
 
     //При выборе фрагмента в левом меню
@@ -144,8 +150,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }*/
             //Устанавливаем новый фрагмент
-            if (curFragment != null)
-                getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
+            //if (curFragment != null)
+            //    getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }
