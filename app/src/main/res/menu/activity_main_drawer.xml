@@ -3,6 +3,14 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/options"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Options" />
+        <item
+            android:id="@+id/categories"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Categories" />
+        <item
             android:id="@+id/product"
             android:icon="@drawable/ic_menu_camera"
             android:title="Product" />
@@ -22,16 +30,12 @@
             android:id="@+id/characteristics_of_the_goods"
             android:icon="@drawable/ic_menu_manage"
             android:title="Characteristics of the goods" />
+        <item
+            android:id="@+id/shop_characteristics"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Shop characteristics" />
     </group>
 
-    <item android:title="Characteristics">
-        <menu>
-            <item
-                android:id="@+id/shop_characteristics"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Shop characteristics" />
 
-        </menu>
-    </item>
 
 </menu>
