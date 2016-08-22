@@ -202,7 +202,7 @@ public class DB {
                     "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
-                    "name TEXT DEFAULT NULL," +
+                    "naBme TEXT DEFAULT NULL," +
                     "title TEXT DEFAULT NULL," +
                     "description TEXT," +
                     "icon TEXT NOT NULL," +
