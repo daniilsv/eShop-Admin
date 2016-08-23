@@ -55,7 +55,7 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         if (!Utils.hasConnection(Core.getInstance().context)) {
             status = 1;
-            response = "10";
+            response = "-1";//Ошибка. Нет подключения
             Log.e("POSTQuery", "mStatus = " + status);
             Log.e("POSTQuery", "mResponse = " + response);
             return null;
@@ -69,15 +69,44 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
             status = 1;
-            response = "11";
+            response = "-2";//Ошибка подключения
         } catch (JSONException e) {
             e.printStackTrace();
             status = 1;
-            response = "12";
+            response = "-3";//Ошибка первичного парсинга ответа
+        }
+        if (status != 0) {
+            showErrorMsg();
         }
         Log.e("POSTQuery", "mStatus = " + status);
         Log.e("POSTQuery", "mResponse = " + response);
         return null;
+    }
+
+    private void showErrorMsg() {
+        switch (response) {
+            //TODO: Сделать вывод ошибки. (Например Тостом)
+/*
+//Такие ошибки сейчас доступны на сервере.
+define('CMS_API_ERROR_CONTROLLER_NOT_FOUND', 1);
+define('CMS_API_ERROR_METHOD_NOT_FOUND', 2);
+define('CMS_API_ERROR_LOGIN_INCORRECT', 3);
+define('CMS_API_ERROR_TOKEN_STATUS_IS_0', 4);
+define('CMS_API_ERROR_TOKEN_STATUS_IS_1', 5);
+define('CMS_API_ERROR_TOKEN_STATUS_IS_2', 6);
+
+//Вот расшифровка:
+define('LANG_API_ERROR_CONTROLLER_NOT_FOUND', "Контроллер не найден");
+define('LANG_API_ERROR_METHOD_NOT_FOUND', "Метод не найден");
+define('CMS_API_ERROR_LOGIN_INCORRECT', "Логин или пароль не верный");
+define('LANG_API_ERROR_TOKEN_STATUS_IS_0', "Токен еще не активирован");
+define('LANG_API_ERROR_TOKEN_STATUS_IS_1', "Токен активирован");
+define('LANG_API_ERROR_TOKEN_STATUS_IS_2', "Токен заблокирован");
+
+//Все серверные ошибки больше нуля.
+//Все клиентские (ошибки приложения) меньше нуля.
+*/
+        }
     }
 
     //Посылаем POST запрос на сайт в текущем потоке

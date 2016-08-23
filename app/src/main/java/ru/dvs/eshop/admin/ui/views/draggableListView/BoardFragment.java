@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;

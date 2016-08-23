@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -9,28 +9,22 @@ import java.util.List;
 
 public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    interface DragStartCallback {
-        boolean startDrag(View itemView, long itemId);
-        boolean isDragging();
-    }
-
+    protected List<T> mItemList;
     private DragStartCallback mDragStartCallback;
     private long mDragItemId = RecyclerView.NO_ID;
     private long mDropTargetId = RecyclerView.NO_ID;
     private boolean mDragOnLongPress;
-    protected List<T> mItemList;
-
     public DragItemAdapter(boolean dragOnLongPress) {
         mDragOnLongPress = dragOnLongPress;
+    }
+
+    public List<T> getItemList() {
+        return mItemList;
     }
 
     public void setItemList(List<T> itemList) {
         mItemList = itemList;
         notifyDataSetChanged();
-    }
-
-    public List<T> getItemList() {
-        return mItemList;
     }
 
     public Object removeItem(int pos) {
@@ -94,12 +88,18 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
         mDragItemId = dragItemId;
     }
 
+    public long getDropTargetId() {
+        return mDropTargetId;
+    }
+
     void setDropTargetId(long dropTargetId) {
         mDropTargetId = dropTargetId;
     }
 
-    public long getDropTargetId() {
-        return mDropTargetId;
+    interface DragStartCallback {
+        boolean startDrag(View itemView, long itemId);
+
+        boolean isDragging();
     }
 
     public abstract class ViewHolder extends RecyclerView.ViewHolder {

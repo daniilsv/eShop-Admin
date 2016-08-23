@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -12,24 +12,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScrollListener {
-
-    public interface DragItemListener {
-        void onDragStarted(int itemPosition, float x, float y);
-
-        void onDragging(int itemPosition, float x, float y);
-
-        void onDragEnded(int newItemPosition);
-    }
-
-    public interface DragItemCallback {
-        boolean canDragItemAtPosition(int dragPosition);
-
-        boolean canDropItemAtPosition(int dropPosition);
-    }
-
-    private enum DragState {
-        DRAG_STARTED, DRAGGING, DRAG_ENDED
-    }
 
     private AutoScroller mAutoScroller;
     private DragItemListener mListener;
@@ -50,17 +32,14 @@ class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScro
     private boolean mScrollingEnabled = true;
     private boolean mDisableReorderWhenDragging;
     private boolean mDragEnabled = true;
-
     public DragItemRecyclerView(Context context) {
         super(context);
         init();
     }
-
     public DragItemRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
         init();
     }
-
     public DragItemRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
@@ -121,12 +100,12 @@ class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScro
         return super.onInterceptTouchEvent(event);
     }
 
-    void setDragEnabled(boolean enabled) {
-        mDragEnabled = enabled;
-    }
-
     boolean isDragEnabled() {
         return mDragEnabled;
+    }
+
+    void setDragEnabled(boolean enabled) {
+        mDragEnabled = enabled;
     }
 
     void setCanNotDragAboveTopItem(boolean canNotDragAboveTop) {
@@ -239,10 +218,7 @@ class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScro
             return false;
         }
         // Check with callback if we are allowed to drop at this position
-        if (mDragCallback != null && !mDragCallback.canDropItemAtPosition(newPos)) {
-            return false;
-        }
-        return true;
+        return !(mDragCallback != null && !mDragCallback.canDropItemAtPosition(newPos));
     }
 
     private void updateDragPositionAndScroll() {
@@ -470,5 +446,23 @@ class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScro
 
         invalidate();
         return item;
+    }
+
+    private enum DragState {
+        DRAG_STARTED, DRAGGING, DRAG_ENDED
+    }
+
+    public interface DragItemListener {
+        void onDragStarted(int itemPosition, float x, float y);
+
+        void onDragging(int itemPosition, float x, float y);
+
+        void onDragEnded(int newItemPosition);
+    }
+
+    public interface DragItemCallback {
+        boolean canDragItemAtPosition(int dragPosition);
+
+        boolean canDropItemAtPosition(int dropPosition);
     }
 }

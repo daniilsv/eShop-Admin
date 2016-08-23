@@ -1,34 +1,18 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.content.Context;
 import android.os.Handler;
 
 public class AutoScroller {
-    public enum AutoScrollMode {
-        POSITION, COLUMN
-    }
-
-    public enum ScrollDirection {
-        UP, DOWN, LEFT, RIGHT
-    }
-
-    public interface AutoScrollListener {
-        void onAutoScrollPositionBy(int dx, int dy);
-
-        void onAutoScrollColumnBy(int columns);
-    }
-
     private static final int SCROLL_SPEED_DP = 8;
     private static final int AUTO_SCROLL_UPDATE_DELAY = 12;
     private static final int COLUMN_SCROLL_UPDATE_DELAY = 1000;
-
     private Handler mHandler = new Handler();
     private AutoScrollListener mListener;
     private boolean mIsAutoScrolling;
     private int mScrollSpeed;
     private long mLastScrollTime;
     private AutoScrollMode mAutoScrollMode = AutoScrollMode.POSITION;
-
     public AutoScroller(Context context, AutoScrollListener listener) {
         mListener = listener;
         mScrollSpeed = (int) (context.getResources().getDisplayMetrics().density * SCROLL_SPEED_DP);
@@ -113,6 +97,20 @@ public class AutoScroller {
                 }
             }, AUTO_SCROLL_UPDATE_DELAY);
         }
+    }
+
+    public enum AutoScrollMode {
+        POSITION, COLUMN
+    }
+
+    public enum ScrollDirection {
+        UP, DOWN, LEFT, RIGHT
+    }
+
+    public interface AutoScrollListener {
+        void onAutoScrollPositionBy(int dx, int dy);
+
+        void onAutoScrollColumnBy(int columns);
     }
 }
 

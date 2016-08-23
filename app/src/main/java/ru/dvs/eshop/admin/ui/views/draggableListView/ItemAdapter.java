@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
@@ -7,10 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ru.dvs.eshop.R;
-import ru.dvs.eshop.admin.ui.activities.draggableListView.DragItemAdapter;
-
 import java.util.ArrayList;
+
+import ru.dvs.eshop.R;
 
 public class ItemAdapter extends DragItemAdapter<Pair<Long, String>, ItemAdapter.ViewHolder> {
 

@@ -47,8 +47,7 @@ public class Core {
         if (ourInstance == null)
             return "";
         File file = ourInstance.context.getExternalFilesDir(null);
-        new File(file, "images").mkdirs();
-        new File(file, "cache").mkdirs();
+        new File(file, "icons/vendors").mkdirs();
         return file != null ? file.getPath() : null;
     }
 

@@ -12,10 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import java.util.ArrayList;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.ui.activities.draggableListView.BoardFragment;
+import ru.dvs.eshop.admin.data.components.eshop.Vendor;
+import ru.dvs.eshop.admin.ui.views.draggableListView.BoardFragment;
 
 
 /**
@@ -60,13 +64,15 @@ public class MainActivity extends AppCompatActivity {
         leftNavMenu.setItemIconTintList(null);
 
         leftNavMenu.setNavigationItemSelectedListener(new LeftNavigationMenuItemListener());
-/*
-        View leftNavMenuHeaderView = getLayoutInflater().inflate(R.layout.nav_menu_header, leftNavMenu, false);
+
+        View leftNavMenuHeaderView = getLayoutInflater().inflate(R.layout.nav_header_main, leftNavMenu, false);
         if (leftNavMenuHeaderView != null) {
             leftNavMenu.addHeaderView(leftNavMenuHeaderView);
 
         }
-  */
+
+        Vendor.loadFromSite();
+        ArrayList<Vendor> vendors = Vendor.getVendors();
     }
 
     //При возвращении из другой активности
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
     //Переподключает текущий фрагмент
     public void reattachCurFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, fragment, "fragment").commit();
+        transaction.replace(R.id.main_frame, fragment).commit();
     }
 
     //При выборе фрагмента в левом меню

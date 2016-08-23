@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -147,24 +147,24 @@ public class DragItem {
         updatePosition();
     }
 
+    float getX() {
+        return mPosX;
+    }
+
     @SuppressWarnings("unused")
     void setX(float x) {
         mPosX = x;
         updatePosition();
     }
 
+    float getY() {
+        return mPosY;
+    }
+
     @SuppressWarnings("unused")
     void setY(float y) {
         mPosY = y;
         updatePosition();
-    }
-
-    float getX() {
-        return mPosX;
-    }
-
-    float getY() {
-        return mPosY;
     }
 
     void setPosition(float touchX, float touchY) {

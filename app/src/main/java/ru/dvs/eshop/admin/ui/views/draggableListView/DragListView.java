@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -14,61 +14,18 @@ import ru.dvs.eshop.R;
 
 public class DragListView extends FrameLayout {
 
-    public interface DragListListener {
-        void onItemDragStarted(int position);
-
-        void onItemDragging(int itemPosition, float x, float y);
-
-        void onItemDragEnded(int fromPosition, int toPosition);
-    }
-
-    public static abstract class DragListListenerAdapter implements DragListListener {
-        @Override
-        public void onItemDragStarted(int position) {
-        }
-
-        @Override
-        public void onItemDragging(int itemPosition, float x, float y) {
-        }
-
-        @Override
-        public void onItemDragEnded(int fromPosition, int toPosition) {
-        }
-    }
-
-    public interface DragListCallback {
-        boolean canDragItemAtPosition(int dragPosition);
-
-        boolean canDropItemAtPosition(int dropPosition);
-    }
-
-    public static abstract class DragListCallbackAdapter implements DragListCallback {
-        @Override
-        public boolean canDragItemAtPosition(int dragPosition) {
-            return true;
-        }
-
-        @Override
-        public boolean canDropItemAtPosition(int dropPosition) {
-            return true;
-        }
-    }
-
     private DragItemRecyclerView mRecyclerView;
     private DragListListener mDragListListener;
     private DragListCallback mDragListCallback;
     private DragItem mDragItem;
     private float mTouchX;
     private float mTouchY;
-
     public DragListView(Context context) {
         super(context);
     }
-
     public DragListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
     public DragListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -275,6 +232,46 @@ public class DragListView extends FrameLayout {
      */
     public void setDropTargetDrawables(Drawable backgroundDrawable, Drawable foregroundDrawable) {
         mRecyclerView.setDropTargetDrawables(backgroundDrawable, foregroundDrawable);
+    }
+
+    public interface DragListListener {
+        void onItemDragStarted(int position);
+
+        void onItemDragging(int itemPosition, float x, float y);
+
+        void onItemDragEnded(int fromPosition, int toPosition);
+    }
+
+    public interface DragListCallback {
+        boolean canDragItemAtPosition(int dragPosition);
+
+        boolean canDropItemAtPosition(int dropPosition);
+    }
+
+    public static abstract class DragListListenerAdapter implements DragListListener {
+        @Override
+        public void onItemDragStarted(int position) {
+        }
+
+        @Override
+        public void onItemDragging(int itemPosition, float x, float y) {
+        }
+
+        @Override
+        public void onItemDragEnded(int fromPosition, int toPosition) {
+        }
+    }
+
+    public static abstract class DragListCallbackAdapter implements DragListCallback {
+        @Override
+        public boolean canDragItemAtPosition(int dragPosition) {
+            return true;
+        }
+
+        @Override
+        public boolean canDropItemAtPosition(int dropPosition) {
+            return true;
+        }
     }
 }
 

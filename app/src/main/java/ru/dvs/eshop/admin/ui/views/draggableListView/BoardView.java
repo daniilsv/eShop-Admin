@@ -1,4 +1,4 @@
-package ru.dvs.eshop.admin.ui.activities.draggableListView;
+package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -22,14 +22,6 @@ import java.util.ArrayList;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
 
-    public interface BoardListener {
-        void onItemDragStarted(int column, int row);
-
-        void onItemChangedColumn(int oldColumn, int newColumn);
-
-        void onItemDragEnded(int fromColumn, int fromRow, int toColumn, int toRow);
-    }
-
     private static final int SCROLL_ANIMATION_DURATION = 325;
     private Scroller mScroller;
     private AutoScroller mAutoScroller;
@@ -50,7 +42,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private int mDragStartRow;
     private boolean mHasLaidOut;
     private boolean mDragEnabled = true;
-
     public BoardView(Context context) {
         super(context);
     }
@@ -568,6 +559,14 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         mLists.add(recyclerView);
         mColumnLayout.addView(layout);
         return recyclerView;
+    }
+
+    public interface BoardListener {
+        void onItemDragStarted(int column, int row);
+
+        void onItemChangedColumn(int oldColumn, int newColumn);
+
+        void onItemDragEnded(int fromColumn, int fromRow, int toColumn, int toRow);
     }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
