@@ -141,16 +141,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            /*curFragment = null;
+            curFragment = null;
             switch (item.getItemId()) {
                 case R.id.menu_summary:
                     curFragment = (infoFragment != null) ? infoFragment : (infoFragment = new InfoFragment());
                     toolbar.setTitle(Core.getString(R.string.menu_info));
                     break;
-            }*/
+            }
             //Устанавливаем новый фрагмент
-            //if (curFragment != null)
-            //    getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
+            if (curFragment != null)
+                getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }
