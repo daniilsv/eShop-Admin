@@ -12,21 +12,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.utils.Encode;
 import ru.dvs.eshop.admin.utils.Utils;
-
-//TODO: Переделать систему шифрования
-//TODO: Добавить систему сжатия данных
 
 /**
  * Асинхронное подключение к API сайта
  */
 public class POSTQuery extends AsyncTask<Void, Void, Void> {
-    private static final String POST_XOR_KEY = "cebce3d1a8b98c7cdfcb88e10ebdd096";
     protected int status = 0;
     protected String response = "";
     private String mToken;
@@ -63,8 +56,8 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         if (!Utils.hasConnection(Core.getInstance().context)) {
             status = 1;
             response = "10";
-            Log.e("AsyncPOST", "mStatus = " + status);
-            Log.e("AsyncPOST", "mResponse = " + response);
+            Log.e("POSTQuery", "mStatus = " + status);
+            Log.e("POSTQuery", "mResponse = " + response);
             return null;
         }
         String result;
@@ -74,14 +67,16 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
             status = node.getInt("status");
             response = node.getString("response");
         } catch (IOException e) {
+            e.printStackTrace();
             status = 1;
             response = "11";
         } catch (JSONException e) {
+            e.printStackTrace();
             status = 1;
             response = "12";
         }
-        Log.e("AsyncPOST", "mStatus = " + status);
-        Log.e("AsyncPOST", "mResponse = " + response);
+        Log.e("POSTQuery", "mStatus = " + status);
+        Log.e("POSTQuery", "mResponse = " + response);
         return null;
     }
 
@@ -94,23 +89,23 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         con.setRequestProperty("User-Agent", "Mozilla/5.0");
 
         con.setDoOutput(true);
-        String str = Encode.compress(Encode.xorIt(URLEncoder.encode(params.toString(), "UTF-8"), POST_XOR_KEY));
+        String str = params.toString();
         OutputStream os = con.getOutputStream();
         os.write(("data=" + str).getBytes());
         os.flush();
-        os.close();
 
         int responseCode = con.getResponseCode();
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            StringBuilder response = new StringBuilder();
+            StringBuilder resp = new StringBuilder();
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+                resp.append(inputLine);
             }
             con.disconnect();
-            return URLDecoder.decode(Encode.xorIt(Encode.decompress(response.toString()), POST_XOR_KEY), "UTF-8");
+            String ret = resp.toString();
+            return ret;
         }
         con.disconnect();
         return "RC: " + responseCode;

@@ -117,25 +117,11 @@ public class DB {
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.d(LOG_TAG, "--- onCreate database ---");
-
-            Log.d(LOG_TAG, "--- Create landings");
-            db.execSQL("CREATE TABLE landings (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "site_id INTEGER NOT NULL," +
-                    "last_widget_id INTEGER NOT NULL," +
-                    "last_lead_id INTEGER NOT NULL," +
-                    "last_statistics_id INTEGER NOT NULL," +
-                    "name TEXT NOT NULL," +
-                    "title TEXT NOT NULL," +
-                    "options TEXT NOT NULL," +
-                    "positions TEXT NOT NULL," +
-                    "published INTEGER NOT NULL);" +
-                    "CREATE UNIQUE INDEX uniq ON landings(site_id, name);"
-            );
             ////////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_categories");
-            db.execSQL("CREATE TABLE cms_eshop_categories (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_categories");
+            db.execSQL("CREATE TABLE com_eshop_categories (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT NOT NULL," +
                     "ordering INTEGER DEFAULT NULL," +
@@ -145,51 +131,51 @@ public class DB {
                     "meta_keys TEXT," +
                     "meta_desc TEXT," +
                     "url TEXT DEFAULT NULL," +
-                    "tpl TEXT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_categories(site_id, name);"
+                    "tpl TEXT DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_categories (id, original_id);"
             );
             ///////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_chars");
-            db.execSQL("CREATE TABLE cms_eshop_chars (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_chars");
+            db.execSQL("CREATE TABLE com_eshop_chars (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT NOT NULL," +
                     "type TEXT NOT NULL," +
-                    "group TEXT NOT NULL," +
+                    "`group` TEXT NOT NULL," +
                     "units TEXT NOT NULL," +
                     "is_custom INTEGER NOT NULL DEFAULT '1'," +
                     "is_published INTEGER NOT NULL DEFAULT '1'," +
-                    "values TEXT," +
+                    "`values` TEXT," +
                     "categories TEXT," +
-                    "ordering INTEGER DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_chars(site_id, name);"
+                    "ordering INTEGER DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_chars (id, original_id);"
             );
             /////////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_delivery_methods");
-            db.execSQL("CREATE TABLE cms_eshop_delivery_methods (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_delivery_methods");
+            db.execSQL("CREATE TABLE com_eshop_delivery_methods (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "title TEXT NOT NULL," +
                     "description TEXT," +
                     "icon TEXT," +
-                    "price FLOAT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_delivery_methods(site_id, name);"
+                    "price FLOAT DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_delivery_methods (id, original_id);"
             );
             ////////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_items");
-            db.execSQL("CREATE TABLE cms_eshop_items (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_items");
+            db.execSQL("CREATE TABLE com_eshop_items (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "category_id INTEGER DEFAULT NULL," +
                     "art_no TEXT DEFAULT NULL," +
                     "title TEXT NOT NULL," +
                     "date_pub DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                    "price FLOAT DEFAULT NULL,"  +
+                    "price FLOAT DEFAULT NULL," +
                     "price_old TEXT DEFAULT NULL," +
                     "quantity FLOAT DEFAULT NULL," +
                     "desc_short TEXT," +
@@ -202,36 +188,35 @@ public class DB {
                     "meta_keys TEXT," +
                     "meta_desc TEXT," +
                     "url TEXT DEFAULT NULL," +
-                    "tpl TEXT DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_items(site_id, name);"
+                    "tpl TEXT DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_items (id, original_id);"
             );
             ////////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_payment_types");
-            db.execSQL("CREATE TABLE cms_eshop_payment_types (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_payment_types");
+            db.execSQL("CREATE TABLE com_eshop_payment_types (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "ordering INTEGER DEFAULT NULL," +
                     "name TEXT DEFAULT NULL," +
                     "title TEXT DEFAULT NULL," +
                     "description TEXT," +
                     "icon TEXT NOT NULL," +
-                    "options TEXT NOT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_payment_types(site_id, name);"
+                    "options TEXT NOT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_payment_types (id, original_id);"
             );
             ////////////////////
-            Log.d(LOG_TAG, "--- Create cms_eshop_vendors");
-            db.execSQL("CREATE TABLE cms_eshop_vendors (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_vendors");
+            db.execSQL("CREATE TABLE com_eshop_vendors (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT DEFAULT NULL," +
                     "icon TEXT," +
                     "description TEXT," +
                     "url TEXT DEFAULT NULL," +
-                    "ordering INTEGER DEFAULT NULL," +
-                    "PRIMARY KEY (`id`));" +
-                    "CREATE UNIQUE INDEX uniq ON cms_eshop_vendors(site_id, name);"
+                    "ordering INTEGER DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_vendors (id, original_id);"
             );
 
         }

@@ -1,7 +1,7 @@
 <FrameLayout
-    android:id="@+id/item_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="2dp"
@@ -15,7 +15,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:duplicateParentState="true"
-        android:foreground="@drawable/card_view_selector"
         card_view:cardBackgroundColor="#ffffff"
         card_view:cardCornerRadius="4dp"
         card_view:cardElevation="2dp"
@@ -33,7 +32,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginRight="12dp"
-                android:src="@drawable/ic_assignment_turned_in_black_24dp"/>
+                android:src="@drawable/ic_menu_slideshow"/>
 
             <TextView
                 android:id="@+id/text"

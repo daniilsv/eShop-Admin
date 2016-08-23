@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private int curAction;
     private ImageView responseImage;
     private TextView responseText;
-    private String host = null;
+    private String site = null;
     private String token = null;
 
     @Override
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Core.getInstance().setActivity(this);
 
-        host = Preferences.getString("host");
+        site = Preferences.getString("host");
         token = Preferences.getString("token");
         switch (Preferences.getInt("login_status")) {
             case 0:
@@ -105,8 +105,8 @@ public class LoginActivity extends AppCompatActivity {
     private void pingAndSwipeNext() {
         EditText siteEditText = (EditText) findViewById(R.id.site);
         if (siteEditText != null) {
-            host = siteEditText.getText().toString();
-            POSTQuery task = new POSTQuery(host) {
+            site = siteEditText.getText().toString();
+            POSTQuery task = new POSTQuery(site) {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0) {
@@ -133,12 +133,12 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailEditText.getText().toString();
             String pass_md5 = Encode.MD5(passEditText.getText().toString());
 
-            POSTQuery task = new POSTQuery(host, "login") {
+            POSTQuery task = new POSTQuery(site, "login") {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0 && Encode.isValidMD5(response)) {
                         token = response;
-                        Preferences.setString("site", host);
+                        Preferences.setString("host", site);
                         Preferences.setString("token", token);
                         Preferences.setInt("login_status", 1);
                         curAction = 2;
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
             this.finish();
             return;
         }
-        POSTQuery task = new POSTQuery(host, token) {
+        POSTQuery task = new POSTQuery(site, token) {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status == 0) {
