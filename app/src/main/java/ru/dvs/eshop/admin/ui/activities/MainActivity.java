@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
+            /*
             curFragment = null;
             switch (item.getItemId()) {
                 case R.id.menu_summary:
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             //Устанавливаем новый фрагмент
             if (curFragment != null)
                 getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
+            */
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }

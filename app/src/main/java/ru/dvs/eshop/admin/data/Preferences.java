@@ -41,6 +41,6 @@ public class Preferences {
     }
 
     public static void setContext(Activity activity) {
-        mSettings = activity.getSharedPreferences("appSettings1", Context.MODE_PRIVATE);
+        mSettings = activity.getSharedPreferences("appSettings", Context.MODE_PRIVATE);
     }
 }

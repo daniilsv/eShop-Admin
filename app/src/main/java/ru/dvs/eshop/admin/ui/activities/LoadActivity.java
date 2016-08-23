@@ -18,8 +18,6 @@ public class LoadActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Preferences.setContext(this);
-        startActivity(new Intent(this, MainActivity.class));
-
         if (Preferences.getInt("login_status") == 2) {
             startActivity(new Intent(this, MainActivity.class));
         } else {
