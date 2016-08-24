@@ -25,23 +25,18 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
     private String mToken;
     private JSONObject mJsonObj;
     private String mSite;
-    private String mAppId;
 
     public POSTQuery(String site, String token) {
         mSite = site;
-        mAppId = Utils.getUniqueID(Core.getInstance().context);
         mToken = token;
         mJsonObj = new JSONObject();
-        put("app_id", mAppId);
         put("token", mToken);
     }
 
     public POSTQuery(String site) {
         mSite = site;
-        mAppId = Utils.getUniqueID(Core.getInstance().context);
         mToken = null;
         mJsonObj = new JSONObject();
-        put("app_id", mAppId);
     }
 
     public void put(String a, String b) {
