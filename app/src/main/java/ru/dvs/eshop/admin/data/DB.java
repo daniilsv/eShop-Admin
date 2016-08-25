@@ -192,8 +192,8 @@ public class DB {
                     "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_items (id, original_id);"
             );
             ////////////////////
-            Log.d(LOG_TAG, "--- Create com_eshop_payment_types");
-            db.execSQL("CREATE TABLE com_eshop_payment_types (" +
+            Log.d(LOG_TAG, "--- Create com_eshop_payment_type");
+            db.execSQL("CREATE TABLE com_eshop_payment_type (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "original_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
@@ -203,7 +203,7 @@ public class DB {
                     "description TEXT," +
                     "icon TEXT NOT NULL," +
                     "options TEXT NOT NULL);" +
-                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_payment_types (id, original_id);"
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_payment_type (id, original_id);"
             );
             ////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_vendors");
