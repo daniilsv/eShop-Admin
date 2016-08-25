@@ -61,7 +61,7 @@ public class PaymentType extends Model {
                     String href = icon_node.getString(key);
                     icons_href.put(key, href);
                     String tmp[] = href.split("/");
-                    Drawable d = Drawable.createFromPath(Core.getStorageDir() + "/icons/payment_type/" + original_id + "/" + tmp[tmp.length - 1]);
+                    Drawable d = Drawable.createFromPath(Core.getStorageDir() + "/icons/payment_types/" + original_id + "/" + tmp[tmp.length - 1]);
                     icons.put(key, d);
                 }
         } catch (JSONException ignored) {
@@ -71,7 +71,7 @@ public class PaymentType extends Model {
     //Получение загруженных лидов из БД
     public static ArrayList<PaymentType> getPaymentType() {
         ArrayList<PaymentType> ret = new ArrayList<>();
-        Cursor c = DB.query("com_eshop_payment_type", null, null, null, null, null, "ordering ASC");
+        Cursor c = DB.query("com_eshop_payment_types", null, null, null, null, null, "ordering ASC");
         if (c == null || !c.moveToFirst()) return ret;
         do {
             ret.add(new PaymentType(c));
@@ -135,7 +135,7 @@ public class PaymentType extends Model {
                             String href = "/upload/" + icon_node.getString(key);
                             icons_href.put(key, href);
                             String tmp[] = href.split("/");
-                            new FILEQuery(site.host + href, Core.getStorageDir() + "/icons/payment_type/" + orig_id + "/" + tmp[tmp.length - 1]).execute();
+                            new FILEQuery(site.host + href, Core.getStorageDir() + "/icons/payment_types/" + orig_id + "/" + tmp[tmp.length - 1]).execute();
                         }
                     }
                 String icon = new JSONObject(icons_href).toString();
@@ -143,11 +143,11 @@ public class PaymentType extends Model {
                 map.put("options", item.getString("options") + "");
 
                 //Проверяем таблицу на наличие элемента с таким original_id
-                Cursor bd_item = DB.query("com_eshop_payment_type", null, "original_id=" + orig_id, null, null, null, null);
+                Cursor bd_item = DB.query("com_eshop_payment_types", null, "original_id=" + orig_id, null, null, null, null);
                 if (bd_item != null && bd_item.moveToFirst()) {//Элемент в таблице есть - обновляем данные
-                    DB.update("com_eshop_payment_type", bd_item.getInt(bd_item.getColumnIndex("id")), map);
+                    DB.update("com_eshop_payment_types", bd_item.getInt(bd_item.getColumnIndex("id")), map);
                 } else {//Элемента в таблиц нет - добавляем его
-                    DB.insert("com_eshop_payment_type", map);
+                    DB.insert("com_eshop_payment_types", map);
                 }
 
             }
