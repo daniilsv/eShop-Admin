@@ -20,6 +20,7 @@ import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.Preferences;
 import ru.dvs.eshop.admin.data.network.POSTQuery;
 import ru.dvs.eshop.admin.utils.Encode;
+import ru.dvs.eshop.admin.utils.Utils;
 
 //TODO: Переделать функционал кнопки назад
 //TODO: Сделать дизайн и "перетекание частей"
@@ -154,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
             };
             task.put("controller", "users");
             task.put("method", "login_api");
+            task.put("app_id", Utils.getUniqueID(this));
             task.put("email", email);
             task.put("pass", pass_md5);
             task.execute();
