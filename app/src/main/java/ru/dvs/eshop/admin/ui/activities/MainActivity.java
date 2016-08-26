@@ -1,10 +1,9 @@
 package ru.dvs.eshop.admin.ui.activities;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,13 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.ArrayList;
-
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
-import ru.dvs.eshop.admin.ui.views.draggableListView.BoardFragment;
-
+import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
 
 /**
  * Главная активность приложения
@@ -31,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private Core core;
+    private Fragment curFragment;
+
+    private VendorsFragment vendorsFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
         if (drawer == null) {
             return;
         }
-        if (savedInstanceState == null) {
-            reattachCurFragment(BoardFragment.newInstance());
-        }
-
 
         NavigationView leftNavMenu = (NavigationView) findViewById(R.id.nav_menu);
         if (leftNavMenu == null) {
@@ -72,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Vendor.loadFromSite();
-        ArrayList<Vendor> vendors = Vendor.getVendors();
     }
 
     //При возвращении из другой активности
@@ -138,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Переподключает текущий фрагмент
     public void reattachCurFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_frame, fragment).commit();
+        getFragmentManager().beginTransaction().detach(curFragment).attach(curFragment).commit();
     }
 
     //При выборе фрагмента в левом меню
@@ -147,18 +140,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            /*
+
             curFragment = null;
             switch (item.getItemId()) {
-                case R.id.menu_summary:
-                    curFragment = (infoFragment != null) ? infoFragment : (infoFragment = new InfoFragment());
-                    toolbar.setTitle(Core.getString(R.string.menu_info));
+                case R.id.menu_vendors:
+                    curFragment = (vendorsFragment != null) ? vendorsFragment : (vendorsFragment = new VendorsFragment());
                     break;
             }
             //Устанавливаем новый фрагмент
             if (curFragment != null)
                 getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
-            */
+
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }
