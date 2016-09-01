@@ -59,6 +59,7 @@ public class DraggableListView extends ListView {
     private boolean mIsWaitingForScrollFinish = false;
     private int mScrollState = OnScrollListener.SCROLL_STATE_IDLE;
     private StableArrayAdapter mAdapter;
+    private OnDragAndDropItemListener mOdadi = null;
     /**
      * Listens for long clicks on any items in the listview. When a cell has
      * been selected, the hover cell is created and set up.
@@ -79,7 +80,8 @@ public class DraggableListView extends ListView {
                     mCellIsMobile = true;
 
                     updateNeighborViewsForID(mMobileItemId);
-
+                    if (mOdadi != null)
+                        mOdadi.onDragged(pos);
                     return true;
                 }
             };
@@ -184,6 +186,7 @@ public class DraggableListView extends ListView {
     public void init(Context context) {
         setOnItemLongClickListener(mOnItemLongClickListener);
         setOnScrollListener(mScrollListener);
+        setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         int SMOOTH_SCROLL_AMOUNT_AT_EDGE = 30;
         mSmoothScrollAmountAtEdge = (int) (SMOOTH_SCROLL_AMOUNT_AT_EDGE / metrics.density);
@@ -368,7 +371,6 @@ public class DraggableListView extends ListView {
         View belowView = getViewForID(mBelowItemId);
         View mobileView = getViewForID(mMobileItemId);
         View aboveView = getViewForID(mAboveItemId);
-
         boolean isBelow = (belowView != null) && (deltaYTotal > belowView.getTop());
         boolean isAbove = (aboveView != null) && (deltaYTotal < aboveView.getTop());
 
@@ -468,6 +470,8 @@ public class DraggableListView extends ListView {
                 }
             });
             hoverViewAnimator.start();
+            if (mOdadi != null)
+                mOdadi.onDropped(getPositionForView(mobileView));
         } else {
             touchEventsCancelled();
         }
@@ -536,5 +540,15 @@ public class DraggableListView extends ListView {
     public void setAdapter(StableArrayAdapter adapter) {
         super.setAdapter(adapter);
         mAdapter = adapter;
+    }
+
+    public void setOnDragAndDropItemListener(OnDragAndDropItemListener odadi) {
+        mOdadi = odadi;
+    }
+
+    public interface OnDragAndDropItemListener {
+        void onDragged(int position);
+
+        void onDropped(int position);
     }
 }

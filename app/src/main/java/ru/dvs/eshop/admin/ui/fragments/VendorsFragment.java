@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +40,6 @@ public class VendorsFragment extends Fragment {
         final DraggableListView listView = (DraggableListView) fragment_view.findViewById(R.id.listview);
         listView.setElementsList(vendors);
         listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -49,7 +47,19 @@ public class VendorsFragment extends Fragment {
                 Toast.makeText(getActivity(), position + " " + item.title, Toast.LENGTH_SHORT).show();
             }
         });
+        listView.setOnDragAndDropItemListener(new DraggableListView.OnDragAndDropItemListener() {
+            @Override
+            public void onDragged(int position) {
+                Vendor item = (Vendor) adapter.getItem(position);
+                Toast.makeText(getActivity(), "started from" + position + " " + item.title, Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onDropped(int position) {
+                Vendor item = (Vendor) adapter.getItem(position);
+                Toast.makeText(getActivity(), "ended on" + position + " " + item.title, Toast.LENGTH_SHORT).show();
+            }
+        });
         FloatingActionButton fabButton = new FloatingActionButton.Builder(getActivity())
                 .withDrawable(getResources().getDrawable(R.drawable.ic_menu_send))
                 .withButtonColor(Color.MAGENTA)
