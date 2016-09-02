@@ -3,7 +3,6 @@ package ru.dvs.eshop.admin.ui.fragments;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,7 @@ public class VendorsFragment extends Fragment {
         View fragment_view = inflater.inflate(R.layout.fragment_vendors, container, false);
 
 
-        ArrayList<Vendor> vendors = Vendor.getVendors();
+        ArrayList vendors = Vendor.getVendors();
 
         final StableArrayAdapter adapter = new StableArrayAdapter<Vendor>(getActivity(), R.layout.row_vendor, vendors) {
             @Override
@@ -70,7 +69,7 @@ public class VendorsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ArrayList arr = listView.getElementsList();
-                Log.d("GOOD", arr.toString());
+                new Vendor().reorderItems(arr);
             }
         });
 

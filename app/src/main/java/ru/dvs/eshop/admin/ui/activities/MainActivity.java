@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Vendor.loadFromSite();
+        new Vendor().getFromSite(null);
     }
 
     //При возвращении из другой активности
