@@ -21,16 +21,16 @@ import ru.dvs.eshop.admin.data.network.POSTQuery;
  * Производитель
  */
 public class Vendor extends Model {
+    public int id;
+    public boolean is_enabled;
+    public String title;
+    public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
+    public String description;
+    public int ordering; //Порядок вывода(сортировка)
+    public String url;
     int original_id;
-    int id;
-    boolean is_enabled;
-    String title;
-    //Иконки - original, big, small
     HashMap<String, String> icons_href; //Ссылки на иконки
-    HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
-    String description;
-    int ordering; //Порядок вывода(сортировка)
-    String url;
+    //Иконки = original, big, small
 
     public Vendor() {
         super();

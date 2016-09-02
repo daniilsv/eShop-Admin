@@ -3,27 +3,27 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/categories"
+            android:id="@+id/menu_categories"
             android:icon="@drawable/ic_menu_camera"
             android:title="Categories"/>
         <item
-            android:id="@+id/product"
+            android:id="@+id/menu_product"
             android:icon="@drawable/ic_menu_camera"
             android:title="Products"/>
         <item
-            android:id="@+id/vendors"
+            android:id="@+id/menu_vendors"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Vendors"/>
         <item
-            android:id="@+id/characteristics_of_the_goods"
+            android:id="@+id/menu_characteristics"
             android:icon="@drawable/ic_menu_manage"
             android:title="Characteristics"/>
         <item
-            android:id="@+id/delivery_methods"
+            android:id="@+id/menu_delivery_methods"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Delivery methods"/>
         <item
-            android:id="@+id/payment_methods"
+            android:id="@+id/menu_payment_methods"
             android:icon="@drawable/ic_menu_manage"
             android:title="Payment types"/>
     </group>
@@ -31,7 +31,7 @@
     <item android:title="">
         <menu>
             <item
-                android:id="@+id/options"
+                android:id="@+id/menu_options"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="Options"/>
         </menu>

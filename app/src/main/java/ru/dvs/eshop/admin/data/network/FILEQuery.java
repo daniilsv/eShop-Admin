@@ -12,9 +12,6 @@ import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.utils.Utils;
 //TODO: Переделать на подобие
 
-/**
- * @see POSTQuery
- */
 //Удобный класс скачивания файла с сайта на устройство
 public class FILEQuery extends AsyncTask<Void, Void, Void> {
     public File result;
@@ -22,16 +19,21 @@ public class FILEQuery extends AsyncTask<Void, Void, Void> {
 
     public FILEQuery(String _url, String destination) {
         mUrl = _url;
+        String r = "";
+        String t[] = destination.split("/");
+
+        for (int i = 0; i < t.length - 1; i++) {
+            r += t[i] + "/";
+        }
+        new File(r).mkdirs();
         result = new File(destination);
     }
 
-
     @Override
-    public Void doInBackground(Void... params) {
+    protected Void doInBackground(Void... params) {
+        if (!Utils.hasConnection(Core.getInstance().context))
+            return null;
         try {
-            if (!Utils.hasConnection(Core.getInstance().context)) {
-                return null;
-            }
             mUrl = (mUrl.contains("https://") ? "https://" : "http://") + mUrl.replaceAll("\\s+|http://|https://", "");
             BufferedInputStream in = new BufferedInputStream(new URL(mUrl).openStream());
             FileOutputStream out = new FileOutputStream(result);
@@ -45,9 +47,4 @@ public class FILEQuery extends AsyncTask<Void, Void, Void> {
         }
         return null;
     }
-
-
-    //if (Utils.hasConnection())
-
-
 }
