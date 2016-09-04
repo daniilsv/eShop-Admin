@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Vendor.loadFromSite();
+        new Vendor().getFromSite(null);
+        getFragmentManager().beginTransaction().replace(R.id.main_frame, new VendorsFragment()).commit();
     }
 
     //При возвращении из другой активности

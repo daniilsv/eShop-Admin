@@ -10,8 +10,6 @@ import java.net.URL;
 
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.utils.Utils;
-//TODO: Переделать на подобие
-
 //Удобный класс скачивания файла с сайта на устройство
 public class FILEQuery extends AsyncTask<Void, Void, Void> {
     public File result;

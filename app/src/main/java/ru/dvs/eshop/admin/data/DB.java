@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import ru.dvs.eshop.admin.Core;
@@ -57,6 +58,16 @@ public class DB {
             cv.put((String) pair.getKey(), (String) pair.getValue());
         }
         return ourInstance.db.update(table, cv, "id=" + id, null);
+    }
+
+    //Добавляет или обновляет элемент в таблицу
+    public static void insertOrUpdate(String table, String where, HashMap<String, String> map) {
+        Cursor bd_item = DB.query(table, null, where, null, null, null, null);
+        if (bd_item != null && bd_item.moveToFirst()) {//Элемент в таблице есть - обновляем данные
+            update(table, bd_item.getInt(bd_item.getColumnIndex("id")), map);
+        } else {//Элемента в таблиц нет - добавляем его
+            insert(table, map);
+        }
     }
 
     //Удаляет по запросу элемент из таблицы

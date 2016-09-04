@@ -2,7 +2,9 @@ package ru.dvs.eshop.admin.data.network;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +14,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
+import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.utils.Utils;
 
@@ -26,17 +31,21 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
     private JSONObject mJsonObj;
     private String mSite;
 
-    public POSTQuery(String site, String token) {
+    public POSTQuery(String site, String token, String controller, String method) {
         mSite = site;
         mToken = token;
         mJsonObj = new JSONObject();
         put("token", mToken);
+        put("controller", controller);
+        put("method", method);
     }
 
-    public POSTQuery(String site) {
+    public POSTQuery(String site, String controller, String method) {
         mSite = site;
         mToken = null;
         mJsonObj = new JSONObject();
+        put("controller", controller);
+        put("method", method);
     }
 
     public void put(String a, String b) {
@@ -46,11 +55,26 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         }
     }
 
+    public void put(String a, Map b) {
+        try {
+            mJsonObj.put(a, new JSONObject(b));
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public void put(String a, List b) {
+        try {
+            mJsonObj.put(a, new JSONArray(b));
+        } catch (JSONException ignored) {
+        }
+    }
+
     @Override
     protected Void doInBackground(Void... voids) {
         if (!Utils.hasConnection(Core.getInstance().context)) {
             status = 1;
             response = "-1";//Ошибка. Нет подключения
+            showErrorMsg();
             Log.e("POSTQuery", "mStatus = " + status);
             Log.e("POSTQuery", "mResponse = " + response);
             return null;
@@ -70,6 +94,9 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
             status = 1;
             response = "-3";//Ошибка первичного парсинга ответа
         }
+        if (response == "null") {
+            status = 1;
+        }
         if (status != 0) {
             showErrorMsg();
         }
@@ -78,29 +105,50 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    private void makeErrorToast(final int res_id) {
+        Core.getInstance().activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Core.getInstance().context, res_id, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void showErrorMsg() {
         switch (response) {
-            //TODO: Сделать вывод ошибки. (Например Тостом)
-/*
-//Такие ошибки сейчас доступны на сервере.
-define('CMS_API_ERROR_CONTROLLER_NOT_FOUND', 1);
-define('CMS_API_ERROR_METHOD_NOT_FOUND', 2);
-define('CMS_API_ERROR_LOGIN_INCORRECT', 3);
-define('CMS_API_ERROR_TOKEN_STATUS_IS_0', 4);
-define('CMS_API_ERROR_TOKEN_STATUS_IS_1', 5);
-define('CMS_API_ERROR_TOKEN_STATUS_IS_2', 6);
+            case "-1":
+                makeErrorToast(R.string.query_error_m1);
+                break;
+            case "-2":
+                makeErrorToast(R.string.query_error_m2);
+                break;
+            case "-3":
+                makeErrorToast(R.string.query_error_m3);
+                break;
 
-//Вот расшифровка:
-define('LANG_API_ERROR_CONTROLLER_NOT_FOUND', "Контроллер не найден");
-define('LANG_API_ERROR_METHOD_NOT_FOUND', "Метод не найден");
-define('CMS_API_ERROR_LOGIN_INCORRECT', "Логин или пароль не верный");
-define('LANG_API_ERROR_TOKEN_STATUS_IS_0', "Токен еще не активирован");
-define('LANG_API_ERROR_TOKEN_STATUS_IS_1', "Токен активирован");
-define('LANG_API_ERROR_TOKEN_STATUS_IS_2', "Токен заблокирован");
+            case "null":
+                makeErrorToast(R.string.query_error_null);
+                break;
 
-//Все серверные ошибки больше нуля.
-//Все клиентские (ошибки приложения) меньше нуля.
-*/
+            case "1":
+                makeErrorToast(R.string.query_error_1);
+                break;
+            case "2":
+            case "3":
+                makeErrorToast(R.string.query_error_2);
+                break;
+            case "4":
+                makeErrorToast(R.string.query_error_4);
+                break;
+            case "5":
+                makeErrorToast(R.string.query_error_5);
+                break;
+            case "6":
+                makeErrorToast(R.string.query_error_6);
+                break;
+            case "7":
+                makeErrorToast(R.string.query_error_7);
+                break;
         }
     }
 
