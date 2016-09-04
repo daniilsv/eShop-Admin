@@ -67,7 +67,6 @@ public class Vendor extends Model {
                 getFromDataBase("eshop_vendors");
     }
 
-
     @Override
     public void parseResponseGet(String response) {
         try {
