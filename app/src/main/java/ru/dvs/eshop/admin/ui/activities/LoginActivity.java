@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText siteEditText = (EditText) findViewById(R.id.site);
         if (siteEditText != null) {
             site = siteEditText.getText().toString();
-            POSTQuery task = new POSTQuery(site) {
+            POSTQuery task = new POSTQuery(site, "api", "ping") {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0) {
@@ -121,8 +121,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             };
-            task.put("controller", "api");
-            task.put("method", "ping");
             task.execute();
         }
     }
@@ -134,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailEditText.getText().toString();
             String pass_md5 = Encode.MD5(passEditText.getText().toString());
 
-            POSTQuery task = new POSTQuery(site, "login") {
+            POSTQuery task = new POSTQuery(site, "users", "login_api") {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0 && Encode.isValidMD5(response)) {
@@ -153,8 +151,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             };
-            task.put("controller", "users");
-            task.put("method", "login_api");
             task.put("app_id", Utils.getUniqueID(this));
             task.put("email", email);
             task.put("pass", pass_md5);
@@ -179,7 +175,7 @@ public class LoginActivity extends AppCompatActivity {
             this.finish();
             return;
         }
-        POSTQuery task = new POSTQuery(site, token) {
+        POSTQuery task = new POSTQuery(site, token, "api", "get_token_info") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status == 0) {
@@ -205,8 +201,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
-        task.put("controller", "api");
-        task.put("method", "get_token_info");
         task.execute();
     }
 

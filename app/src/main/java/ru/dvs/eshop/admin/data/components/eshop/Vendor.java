@@ -13,20 +13,17 @@ import java.util.Iterator;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.components.Model;
-import ru.dvs.eshop.admin.data.network.FILEQuery;
 
 /**
  * Производитель
  */
 public class Vendor extends Model {
-    public int id;
     public boolean is_enabled;
     public String title;
     public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
     public String description;
     public int ordering; //Порядок вывода(сортировка)
     public String url;
-    int original_id;
     HashMap<String, String> icons_href; //Ссылки на иконки
     //Иконки = normal, big, small
 
@@ -72,8 +69,7 @@ public class Vendor extends Model {
 
 
     @Override
-    public void parseResponse(String response) {
-        HashMap<String, String> icons_href = new HashMap<>();
+    public void parseResponseGet(String response) {
         try {
             //Распарсиваем полученную JSON-строку
             JSONObject node_root = new JSONObject(response);
@@ -84,43 +80,29 @@ public class Vendor extends Model {
             while (keys.hasNext()) {
                 //Заполняем ассоциативный массив
                 JSONObject item = node_root.getJSONObject(keys.next());
-                int orig_id = item.getInt("id");
                 HashMap<String, String> map = new HashMap<>();
                 map.put("original_id", item.getInt("id") + "");
                 map.put("is_enabled", item.getInt("is_enabled") + "");
                 map.put("title", item.getString("title") + "");
-
-                //TODO: Вынести нужных иконок в отдельную функцию
-                JSONObject icon_node = new JSONObject(item.getString("icon"));
-                Iterator<String> icon_keys = icon_node.keys();
-                if (icon_keys != null)
-                    while (icon_keys.hasNext()) {
-                        String key = icon_keys.next();
-                        if (key.equals("big") || key.equals("small") || key.equals("normal")) {
-                            String href = "/upload/" + icon_node.getString(key);
-                            icons_href.put(key, href);
-                            String tmp[] = href.split("/");
-                            new FILEQuery(site.host + href, Core.getStorageDir() + "/icons/vendors/" + orig_id + "/" + tmp[tmp.length - 1]).execute();
-                        }
-                    }
-                String icon = new JSONObject(icons_href).toString();
-                map.put("icon", icon);
+                map.put("icon", loadIconsFromSite(item.getString("icon"), "vendors/" + item.getInt("id")));
                 map.put("description", item.getString("description") + "");
                 map.put("url", item.getString("url") + "");
                 map.put("ordering", item.getInt("ordering") + "");
-                //TODO: Перенести в DB. Переделать в отдельную функцию insertOrUpdate
-                //Проверяем таблицу на наличие элемента с таким original_id
-                Cursor bd_item = DB.query("com_eshop_vendors", null, "original_id=" + orig_id, null, null, null, null);
-                if (bd_item != null && bd_item.moveToFirst()) {//Элемент в таблице есть - обновляем данные
-                    DB.update("com_eshop_vendors", bd_item.getInt(bd_item.getColumnIndex("id")), map);
-                } else {//Элемента в таблиц нет - добавляем его
-                    DB.insert("com_eshop_vendors", map);
-                }
-
+                DB.insertOrUpdate("com_eshop_vendors", "original_id=" + item.getInt("id"), map);
             }
         } catch (JSONException e) {
             //ERROR while parse data!
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void parseResponseReorder(String response, ArrayList arr) {
+        int i = 0;
+        for (Object item : arr) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("ordering", ++i + "");
+            DB.update("com_eshop_vendors", ((Model) item).id, map);
         }
     }
 

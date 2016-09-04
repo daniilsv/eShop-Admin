@@ -1,6 +1,7 @@
 package ru.dvs.eshop.admin.ui.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -15,7 +16,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
+import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.views.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.draggableListView.DraggableListView;
 import ru.dvs.eshop.admin.ui.views.draggableListView.StableArrayAdapter;
@@ -26,7 +29,7 @@ public class VendorsFragment extends Fragment {
         View fragment_view = inflater.inflate(R.layout.fragment_vendors, container, false);
 
 
-        ArrayList vendors = Vendor.getVendors();
+        ArrayList<Vendor> vendors = Vendor.getVendors();
 
         final StableArrayAdapter adapter = new StableArrayAdapter<Vendor>(getActivity(), R.layout.row_vendor, vendors) {
             @Override
@@ -44,6 +47,8 @@ public class VendorsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Vendor item = (Vendor) adapter.getItem(position);
                 Toast.makeText(getActivity(), position + " " + item.title, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Core.getInstance().context, ItemActivity.class);
+                startActivity(intent);
             }
         });
         listView.setOnDragAndDropItemListener(new DraggableListView.OnDragAndDropItemListener() {
@@ -68,8 +73,13 @@ public class VendorsFragment extends Fragment {
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList arr = listView.getElementsList();
-                new Vendor().reorderItems(arr);
+                ArrayList<Vendor> arr = listView.getElementsList();
+
+                ArrayList<Integer> items = new ArrayList<>();
+                for (Vendor item : arr) {
+                    items.add(item.original_id);
+                }
+                new Vendor().reorderItems(items, arr);
             }
         });
 
