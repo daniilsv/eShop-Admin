@@ -85,7 +85,11 @@ public class Model {
         return this;
     }
 
-    public void reorderItems(ArrayList<Integer> items, final ArrayList arr) {
+    public void reorderItems(final ArrayList arr) {
+        ArrayList<Integer> items = new ArrayList<>();
+        for (Object item : arr) {
+            items.add(((Model) item).original_id);
+        }
         POSTQuery task = new POSTQuery(site.host, site.token, mController, "reorder") {
             @Override
             protected void onPostExecute(Void voids) {
