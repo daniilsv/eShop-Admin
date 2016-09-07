@@ -14,6 +14,7 @@ import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
  * Created by Никита on 04.09.2016.
  */
 public class ItemActivity extends AppCompatActivity {
+    public Toolbar toolbar;
     private Fragment curFragment;
     private VendorsFragment vendorsFragment = null;
 
@@ -25,14 +26,8 @@ public class ItemActivity extends AppCompatActivity {
         Core core = Core.getInstance();
         core.setActivity(this);
 
-
         ItemViewFragment itemViewFragment = new ItemViewFragment();
-        itemViewFragment.setItemActivity(this);
         placeFragment(itemViewFragment);
-    }
-
-    public void setToolbar(Toolbar tb) {
-        setSupportActionBar(tb);
     }
 
     //При нажатии кнопки назад

@@ -18,14 +18,10 @@ package ru.dvs.eshop.admin.ui.views.draggableListView;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import java.util.HashMap;
 import java.util.List;
-
-import ru.dvs.eshop.R;
 
 public class StableArrayAdapter<T> extends ArrayAdapter<T> {
 
@@ -48,18 +44,6 @@ public class StableArrayAdapter<T> extends ArrayAdapter<T> {
         }
         T item = getItem(position);
         return mIdMap.get(item);
-    }
-
-    protected View getView(T item, View view) {
-        return view;
-    }
-
-    @Override
-    public View getView(int position, View viewF, ViewGroup parent) {
-        View view = lInflater.inflate(R.layout.row_vendor, parent, false);
-        T item = getItem(position);
-        view = getView(item, view);
-        return view;
     }
 
     @Override

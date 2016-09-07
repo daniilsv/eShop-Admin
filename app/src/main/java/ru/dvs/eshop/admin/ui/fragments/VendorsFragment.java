@@ -33,7 +33,9 @@ public class VendorsFragment extends Fragment {
 
         final StableArrayAdapter adapter = new StableArrayAdapter<Vendor>(getActivity(), R.layout.row_vendor, vendors) {
             @Override
-            public View getView(Vendor item, View view) {
+            public View getView(int position, View viewF, ViewGroup parent) {
+                View view = lInflater.inflate(R.layout.row_vendor, parent, false);
+                Vendor item = getItem(position);
                 ((TextView) view.findViewById(R.id.title)).setText(item.title);
                 ((ImageView) view.findViewById(R.id.image)).setImageDrawable(item.icons.get("small"));
                 return view;
