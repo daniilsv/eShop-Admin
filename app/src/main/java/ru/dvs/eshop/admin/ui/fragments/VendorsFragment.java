@@ -17,10 +17,9 @@ import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.adapters.VendorsAdapter;
 import ru.dvs.eshop.admin.ui.views.FloatingActionButton;
-import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.OnStartDragListener;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 
-public class VendorsFragment extends Fragment implements OnStartDragListener {
+public class VendorsFragment extends Fragment {
 
     private ItemTouchHelper mItemTouchHelper;
 
@@ -32,7 +31,7 @@ public class VendorsFragment extends Fragment implements OnStartDragListener {
 
         ArrayList<Vendor> vendors = Vendor.getVendors();
 
-        final VendorsAdapter adapter = new VendorsAdapter(getActivity(), vendors, this);
+        final VendorsAdapter adapter = new VendorsAdapter(getActivity(), vendors, null);
 
         RecyclerView recyclerView = (RecyclerView) fragment_view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -60,9 +59,5 @@ public class VendorsFragment extends Fragment implements OnStartDragListener {
         return fragment_view;
     }
 
-    @Override
-    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-
-    }
 
 }
