@@ -54,7 +54,7 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
         holder.handleView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                if (mDragStartListener != null && MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
                     mDragStartListener.onStartDrag(holder);
                 }
                 return false;
@@ -96,12 +96,12 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            itemView.findViewById(R.id.holder).setBackgroundColor(Color.argb(255, 230, 230, 230));
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+            itemView.findViewById(R.id.holder).setBackgroundColor(0);
         }
 
         @Override
@@ -110,4 +110,3 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
         }
     }
 }
-

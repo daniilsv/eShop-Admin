@@ -3,7 +3,6 @@ package ru.dvs.eshop.admin.ui.activities;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
@@ -14,7 +13,6 @@ import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
  * Created by Никита on 04.09.2016.
  */
 public class ItemActivity extends AppCompatActivity {
-    public Toolbar toolbar;
     private Fragment curFragment;
     private VendorsFragment vendorsFragment = null;
 
@@ -25,6 +23,16 @@ public class ItemActivity extends AppCompatActivity {
 
         Core core = Core.getInstance();
         core.setActivity(this);
+
+
+        //intent
+        //what
+        //id
+
+        //itemView
+        //itemEdit
+        //(Button)DeleteItem
+
 
         ItemViewFragment itemViewFragment = new ItemViewFragment();
         placeFragment(itemViewFragment);
