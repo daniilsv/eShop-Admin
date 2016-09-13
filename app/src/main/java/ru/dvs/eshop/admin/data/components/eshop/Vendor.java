@@ -29,7 +29,6 @@ public class Vendor extends Model {
 
     public Vendor() {
         super("eshop", "vendor");
-
     }
 
     public Vendor(Cursor c) {
@@ -60,11 +59,15 @@ public class Vendor extends Model {
         }
     }
 
-    //Получение загруженных лидов из БД
     public static ArrayList getVendors() {
         return new Vendor().
                 orderBy("ordering", "ASC").
                 getFromDataBase("eshop_vendors");
+    }
+
+    public static Vendor getVendorById(int id) {
+        return (Vendor) new Vendor().
+                getByItemId("eshop_vendors", id);
     }
 
     @Override
