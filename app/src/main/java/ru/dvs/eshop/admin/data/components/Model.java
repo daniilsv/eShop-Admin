@@ -70,6 +70,15 @@ public class Model {
         return ret;
     }
 
+    public Object getByItemId(String table, int id) {
+        Cursor c = DB.query("com_" + table, null, "id=" + id, null, null, null, null);
+        if (c == null || !c.moveToFirst()) return null;
+        cleanDB();
+        Object obj = newInstance(c);
+        c.close();
+        return obj;
+    }
+
     public void cleanDB() {
         mWhere = null;
         mOrder = null;

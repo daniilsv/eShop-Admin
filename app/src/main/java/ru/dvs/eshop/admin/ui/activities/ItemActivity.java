@@ -9,9 +9,6 @@ import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.ui.fragments.ItemViewFragment;
 import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
 
-/**
- * Created by Никита on 04.09.2016.
- */
 public class ItemActivity extends AppCompatActivity {
     private Fragment curFragment;
     private VendorsFragment vendorsFragment = null;
@@ -23,7 +20,8 @@ public class ItemActivity extends AppCompatActivity {
 
         Core core = Core.getInstance();
         core.setActivity(this);
-
+        ItemViewFragment itemViewFragment = new ItemViewFragment();
+        itemViewFragment.setArguments(getIntent().getExtras());
 
         //intent
         //what
@@ -34,7 +32,6 @@ public class ItemActivity extends AppCompatActivity {
         //(Button)DeleteItem
 
 
-        ItemViewFragment itemViewFragment = new ItemViewFragment();
         placeFragment(itemViewFragment);
     }
 
@@ -46,11 +43,9 @@ public class ItemActivity extends AppCompatActivity {
 
     //Обновление текуущего фрагмента
     private void placeFragment(Fragment fragment) {
+        if (fragment == null)
+            return;
         getFragmentManager().beginTransaction().replace(R.id.item_frame, fragment).commit();
     }
 
-    //Переподключает текущий фрагмент
-    public void reattachCurFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction().detach(curFragment).attach(curFragment).commit();
-    }
 }

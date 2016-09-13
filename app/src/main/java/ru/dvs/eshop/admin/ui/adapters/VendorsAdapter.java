@@ -3,10 +3,8 @@ package ru.dvs.eshop.admin.ui.adapters;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -47,19 +45,7 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
 
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, int position) {
-        holder.textView.setText(mItems.get(position).title);
-        holder.handleView.setImageDrawable(mItems.get(position).icons.get("small"));
-
-        // Start a drag whenever the handle view it touched
-        holder.handleView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (mDragStartListener != null && MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-                    mDragStartListener.onStartDrag(holder);
-                }
-                return false;
-            }
-        });
+        holder.setItem(mItems.get(position));
     }
 
 
@@ -82,15 +68,16 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener {
-        public final TextView textView;
-        public final ImageView handleView;
+        private final TextView mTextView;
+        private final ImageView mHandleView;
         private final Activity mActivity;
+        private Vendor mItem;
 
         public ItemViewHolder(Activity activity, View itemView) {
             super(itemView);
             mActivity = activity;
-            textView = (TextView) itemView.findViewById(R.id.title);
-            handleView = (ImageView) itemView.findViewById(R.id.image);
+            mTextView = (TextView) itemView.findViewById(R.id.title);
+            mHandleView = (ImageView) itemView.findViewById(R.id.image);
             itemView.setOnClickListener(this);
         }
 
@@ -106,7 +93,16 @@ public class VendorsAdapter extends RecyclerView.Adapter<VendorsAdapter.ItemView
 
         @Override
         public void onClick(View v) {
-            mActivity.startActivity(new Intent(mActivity, ItemActivity.class));
+            Intent intent = new Intent(mActivity, ItemActivity.class);
+            intent.putExtra("item_type", "vendor");
+            intent.putExtra("item_id", mItem.id);
+            mActivity.startActivity(intent);
+        }
+
+        public void setItem(Vendor item) {
+            mItem = item;
+            mTextView.setText(item.title);
+            mHandleView.setImageDrawable(item.icons.get("small"));
         }
     }
 }
