@@ -15,7 +15,6 @@ import android.view.View;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
 
 /**
@@ -66,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        new Vendor().getFromSite(null);
-        //getFragmentManager().beginTransaction().replace(R.id.main_frame, new VendorsFragment()).commit();
     }
 
     //При возвращении из другой активности

@@ -128,14 +128,20 @@ public class Vendor extends Model {
     }
 
     @Override
-    public void fillViewForReadItem(View view) {
+    public void fillViewForReadItem(View insertPointView) {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        for (int i = 0; i < 15; i++) {
-            View v = vi.inflate(R.layout.row_vendor, null);
-            ((TextView) v.findViewById(R.id.title)).setText(title);
-            ((ImageView) v.findViewById(R.id.image)).setImageDrawable(icons.get("small"));
-            ((ViewGroup) view).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
+        View v = vi.inflate(R.layout.view_vendor, null);
+        ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
+
+        if (description.equals("null"))
+            v.findViewById(R.id.view_vendor_description).setVisibility(View.GONE);
+        else ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
+
+        if (url.equals("null"))
+            v.findViewById(R.id.view_vendor_url).setVisibility(View.GONE);
+        else ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
+
+        ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override

@@ -33,6 +33,10 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         return mItems;
     }
 
+    public void setItems(ArrayList<Model> items) {
+        mItems = items;
+    }
+
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(mRowResId, parent, false);

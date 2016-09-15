@@ -16,13 +16,14 @@ import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.Site;
 import ru.dvs.eshop.admin.data.network.FILEQuery;
 import ru.dvs.eshop.admin.data.network.POSTQuery;
+import ru.dvs.eshop.admin.utils.Function;
 
 public class Model {
     public final String controller;
     public final String type;
+    public final Site site;
     public int id;
     public int original_id;
-    protected Site site;
     private String mWhere = null;
     private String mOrder = null;
 
@@ -36,13 +37,15 @@ public class Model {
         return null;
     }
 
-    public void getFromSite(HashMap<String, String> additional) {
+    public void getFromSite(HashMap<String, String> additional, final Function callback) {
         POSTQuery task = new POSTQuery(site.host, site.token, controller, "get") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
                     return;
                 parseResponseGet(response);
+                if (callback != null)
+                    callback.run();
             }
         };
         task.put("what", type);
@@ -95,7 +98,7 @@ public class Model {
         return this;
     }
 
-    public void reorderItems(final ArrayList arr) {
+    public void reorderItems(final ArrayList arr, final Function callback) {
         ArrayList<Integer> items = new ArrayList<>();
         for (Object item : arr) {
             items.add(((Model) item).original_id);
@@ -106,6 +109,8 @@ public class Model {
                 if (status != 0)
                     return;
                 parseResponseReorder(response, arr);
+                if (callback != null)
+                    callback.run();
             }
         };
         task.put("what", type);
