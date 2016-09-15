@@ -1,6 +1,7 @@
 package ru.dvs.eshop.admin.data.components;
 
 import android.database.Cursor;
+import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,17 +18,17 @@ import ru.dvs.eshop.admin.data.network.FILEQuery;
 import ru.dvs.eshop.admin.data.network.POSTQuery;
 
 public class Model {
+    public final String controller;
+    public final String type;
     public int id;
     public int original_id;
     protected Site site;
-    protected String mController;
-    protected String mType;
     private String mWhere = null;
     private String mOrder = null;
 
-    public Model(String controller, String type) {
-        mController = controller;
-        mType = type;
+    public Model(String _controller, String _type) {
+        controller = _controller;
+        type = _type;
         site = Core.getInstance().site;
     }
 
@@ -36,7 +37,7 @@ public class Model {
     }
 
     public void getFromSite(HashMap<String, String> additional) {
-        POSTQuery task = new POSTQuery(site.host, site.token, mController, "get") {
+        POSTQuery task = new POSTQuery(site.host, site.token, controller, "get") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -44,7 +45,7 @@ public class Model {
                 parseResponseGet(response);
             }
         };
-        task.put("what", mType);
+        task.put("what", type);
         if (additional != null)
             for (Map.Entry o : additional.entrySet()) {
                 task.put((String) o.getKey(), (String) o.getValue());
@@ -99,7 +100,7 @@ public class Model {
         for (Object item : arr) {
             items.add(((Model) item).original_id);
         }
-        POSTQuery task = new POSTQuery(site.host, site.token, mController, "reorder") {
+        POSTQuery task = new POSTQuery(site.host, site.token, controller, "reorder") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -107,7 +108,7 @@ public class Model {
                 parseResponseReorder(response, arr);
             }
         };
-        task.put("what", mType);
+        task.put("what", type);
         task.put("items", items);
         task.execute();
     }
@@ -131,6 +132,15 @@ public class Model {
             e.printStackTrace();
         }
         return new JSONObject(icons_href).toString();
+    }
+
+    public void fillViewForListItem(View view) {
+    }
+
+    public void fillViewForReadItem(View view) {
+    }
+
+    public void fillViewForEditItem(View view) {
     }
 }
 

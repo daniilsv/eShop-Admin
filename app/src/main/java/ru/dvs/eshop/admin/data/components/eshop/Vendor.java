@@ -1,7 +1,13 @@
 package ru.dvs.eshop.admin.data.components.eshop;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.components.Model;
@@ -111,6 +118,32 @@ public class Vendor extends Model {
     @Override
     protected Vendor newInstance(Cursor c) {
         return new Vendor(c);
+    }
+
+    public void fillViewForListItem(View view) {
+        TextView textView = (TextView) view.findViewById(R.id.title);
+        ImageView handleView = (ImageView) view.findViewById(R.id.image);
+        textView.setText(title);
+        handleView.setImageDrawable(icons.get("small"));
+    }
+
+    @Override
+    public void fillViewForReadItem(View view) {
+        LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        for (int i = 0; i < 15; i++) {
+            View v = vi.inflate(R.layout.row_vendor, null);
+            ((TextView) v.findViewById(R.id.title)).setText(title);
+            ((ImageView) v.findViewById(R.id.image)).setImageDrawable(icons.get("small"));
+            ((ViewGroup) view).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+    }
+
+    @Override
+    public void fillViewForEditItem(View view) {
+        TextView textView = (TextView) view.findViewById(R.id.title);
+        ImageView handleView = (ImageView) view.findViewById(R.id.image);
+        textView.setText(title);
+        handleView.setImageDrawable(icons.get("small"));
     }
 
 }

@@ -14,14 +14,13 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
-import ru.dvs.eshop.admin.ui.adapters.VendorsAdapter;
+import ru.dvs.eshop.admin.ui.adapters.ModelAdapter;
 import ru.dvs.eshop.admin.ui.views.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 
 public class VendorsFragment extends Fragment {
-
-    private ItemTouchHelper mItemTouchHelper;
 
 
     @Override
@@ -29,9 +28,9 @@ public class VendorsFragment extends Fragment {
         View fragment_view = inflater.inflate(R.layout.fragment_vendors, container, false);
 
 
-        ArrayList<Vendor> vendors = Vendor.getVendors();
+        ArrayList<Model> vendors = Vendor.getVendors();
 
-        final VendorsAdapter adapter = new VendorsAdapter(getActivity(), vendors, null);
+        final ModelAdapter adapter = new ModelAdapter(getActivity(), vendors, R.layout.row_vendor);
 
         RecyclerView recyclerView = (RecyclerView) fragment_view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -39,8 +38,8 @@ public class VendorsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         FloatingActionButton fabButton = new FloatingActionButton.Builder(getActivity())
                 .withDrawable(getResources().getDrawable(R.drawable.ic_menu_send))
@@ -51,7 +50,7 @@ public class VendorsFragment extends Fragment {
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Vendor> arr = adapter.getItems();
+                ArrayList<Model> arr = adapter.getItems();
                 new Vendor().reorderItems(arr);
             }
         });
