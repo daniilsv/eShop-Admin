@@ -32,6 +32,7 @@ public class Model {
         site = Core.getInstance().site;
     }
 
+
     protected Object newInstance(Cursor c) {
         return null;
     }
