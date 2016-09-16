@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="384dp"
         android:fitsSystemWindows="true"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -40,7 +40,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"

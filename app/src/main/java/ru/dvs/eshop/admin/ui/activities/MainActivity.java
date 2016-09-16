@@ -128,11 +128,6 @@ public class MainActivity extends AppCompatActivity {
         // }
     }
 
-    //Переподключает текущий фрагмент
-    public void reattachCurFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction().detach(curFragment).attach(curFragment).commit();
-    }
-
     //При выборе фрагмента в левом меню
     private class LeftNavigationMenuItemListener implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -147,7 +142,11 @@ public class MainActivity extends AppCompatActivity {
             }
             //Устанавливаем новый фрагмент
             if (curFragment != null)
-                getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
+                getFragmentManager().
+                        beginTransaction().
+                        setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).
+                        replace(R.id.main_frame, curFragment).
+                        commit();
 
             drawer.closeDrawer(GravityCompat.START);
             return true;

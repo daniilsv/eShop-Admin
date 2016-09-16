@@ -142,10 +142,10 @@ public class Model {
     public void fillViewForListItem(View view) {
     }
 
-    public void fillViewForReadItem(View view) {
+    public void fillViewForReadItem(View insertPointView) {
     }
 
-    public void fillViewForEditItem(View view) {
+    public void fillViewForEditItem(View insertPointView) {
     }
 }
 

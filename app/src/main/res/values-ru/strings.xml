@@ -21,4 +21,6 @@
     <string name="query_error_m2">Ошибка подключения</string>
     <string name="query_error_m3">Ошибка первичного парсинга ответа</string>
     <string name="query_error_null">Ошибка выполнения функции</string>
+    <string name="query_error_8">Неверный запрос</string>
+    <string name="query_error_9">Элемент уже удалён</string>
 </resources>
