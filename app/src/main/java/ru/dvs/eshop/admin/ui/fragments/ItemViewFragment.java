@@ -10,11 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
+import ru.dvs.eshop.admin.utils.Function;
 
 public class ItemViewFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbar;
@@ -22,15 +26,16 @@ public class ItemViewFragment extends Fragment {
     ViewGroup insertPointView;
     FloatingActionButton editFab;
     View fragment_view;
+    Model item;
 
     public void fillData() {
         String type = getArguments().getString("item_type", "-1");
         int itemId = getArguments().getInt("item_id", -1);
         switch (type) {
             case "vendor":
-                Vendor item = Vendor.getVendorById(itemId);
-                collapsingToolbar.setTitle(item.title);
-                flexibleImage.setImageDrawable(item.icons.get("big"));
+                item = Vendor.getVendorById(itemId);
+                collapsingToolbar.setTitle(((Vendor) item).title);
+                flexibleImage.setImageDrawable(((Vendor) item).icons.get("big"));
                 item.fillViewForReadItem(insertPointView);
                 break;
         }
@@ -76,6 +81,7 @@ public class ItemViewFragment extends Fragment {
             }
         });
 */
+
         editFab = (FloatingActionButton) fragment_view.findViewById(R.id.fab_edit);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +91,21 @@ public class ItemViewFragment extends Fragment {
                 ((ItemActivity) getActivity()).placeFragment(itemEditFragment, true);
             }
         });
+
+        Button setEnabled = (Button) fragment_view.findViewById(R.id.is_visible);
+        setEnabled.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                item.setFieldOnSite("is_enabled", (!item.is_enabled) ? "1" : "0", new Function() {
+                    @Override
+                    public void run() {
+                        Core.makeToast("Changed visible", false);
+                        item.is_enabled = !item.is_enabled;
+                    }
+                });
+            }
+        });
+
         return fragment_view;
     }
 

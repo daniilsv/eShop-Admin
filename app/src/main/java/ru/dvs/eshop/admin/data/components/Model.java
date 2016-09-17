@@ -34,7 +34,6 @@ public class Model {
         site = Core.getInstance().site;
     }
 
-
     protected Object newInstance(Cursor c) {
         return null;
     }
@@ -175,6 +174,12 @@ public class Model {
 
     public void fillViewForEditItem(View insertPointView) {
     }
+
+    public HashMap parseEditItem(View containerView) {
+        return null;
+    }
+
+
 }
 
 
