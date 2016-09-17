@@ -143,11 +143,15 @@ public class Vendor extends Model {
     }
 
     @Override
-    public void fillViewForEditItem(View view) {
-        TextView textView = (TextView) view.findViewById(R.id.title);
-        ImageView handleView = (ImageView) view.findViewById(R.id.image);
-        textView.setText(title);
-        handleView.setImageDrawable(icons.get("small"));
+    public void fillViewForEditItem(View insertPointView) {
+        LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = vi.inflate(R.layout.edit_vendor, null);
+
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_title)).setText(title);
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_description)).setText(description);
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_url)).setText(url);
+
+        ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override

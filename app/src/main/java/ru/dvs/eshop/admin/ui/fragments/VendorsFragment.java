@@ -45,7 +45,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mSwipeRefreshLayout = (SwipeRefreshLayout) fragment_view.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, true);
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
