@@ -8,23 +8,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import java.util.HashMap;
 
 import ru.dvs.eshop.R;
+import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
+import ru.dvs.eshop.admin.utils.Function;
 
 public class ItemEditFragment extends Fragment {
     Toolbar toolbar;
     ViewGroup insertPointView;
     View fragment_view;
+    Model item;
 
     public void fillData() {
         String type = getArguments().getString("item_type", "-1");
         int itemId = getArguments().getInt("item_id", -1);
         switch (type) {
             case "vendor":
-                Vendor item = Vendor.getVendorById(itemId);
-                toolbar.setTitle(item.title);
+                item = Vendor.getVendorById(itemId);
+                toolbar.setTitle(((Vendor) item).title);
                 item.fillViewForEditItem(insertPointView);
                 break;
         }
@@ -51,7 +58,25 @@ public class ItemEditFragment extends Fragment {
         insertPointView = (ViewGroup) fragment_view.findViewById(R.id.item_frame);
 
         fillData();
+        Button editBut = (Button) fragment_view.findViewById(R.id.button_save);
+        editBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setEnabled(false);
+                HashMap map = item.parseEditItem(insertPointView);
+                item.editOnSite(map, new Function() {
+                    @Override
+                    public void run() {
+                        Core.makeToast("Updated", false);
+                        ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
+                                setDuration(500).
+                                start();
+                        getActivity().onBackPressed();
+                    }
+                });
 
+            }
+        });
         return fragment_view;
     }
 

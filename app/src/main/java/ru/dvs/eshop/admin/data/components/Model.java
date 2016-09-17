@@ -24,6 +24,7 @@ public class Model {
     public final Site site;
     public int id;
     public int original_id;
+    public boolean is_enabled;
     private String mWhere = null;
     private String mOrder = null;
 
@@ -57,11 +58,38 @@ public class Model {
         task.execute();
     }
 
+    public void editOnSite(final HashMap<String, String> data, final Function callback) {
+        POSTQuery task = new POSTQuery(site.host, site.token, controller, "edit") {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0)
+                    return;
+                parseResponseEdit(response, data);
+                if (callback != null)
+                    callback.run();
+            }
+        };
+        task.put("what", type);
+        task.put("id", original_id + "");
+        task.put("data", data);
+        task.execute();
+    }
+
+    public void setFieldOnSite(String field, String value, Function callback) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(field, value);
+        editOnSite(map, callback);
+    }
+
     public void parseResponseGet(String response) {
     }
 
     public void parseResponseReorder(String response, ArrayList<Model> arr) {
     }
+
+    public void parseResponseEdit(String response, HashMap<String, String> data) {
+    }
+
 
     public ArrayList getFromDataBase(String table) {
         ArrayList ret = new ArrayList();
@@ -148,6 +176,12 @@ public class Model {
 
     public void fillViewForEditItem(View insertPointView) {
     }
+
+    public HashMap parseEditItem(View containerView) {
+        return null;
+    }
+
+
 }
 
 

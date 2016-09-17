@@ -26,7 +26,6 @@ import ru.dvs.eshop.admin.data.components.Model;
  * Производитель
  */
 public class Vendor extends Model {
-    public boolean is_enabled;
     public String title;
     public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
     public String description;
@@ -124,6 +123,11 @@ public class Vendor extends Model {
     public void fillViewForListItem(View view) {
         TextView textView = (TextView) view.findViewById(R.id.title);
         ImageView handleView = (ImageView) view.findViewById(R.id.image);
+        View isVisibleView = view.findViewById(R.id.is_visible);
+        if (!is_enabled)
+            isVisibleView.setVisibility(View.VISIBLE);
+        else
+            isVisibleView.setVisibility(View.GONE);
         textView.setText(title);
         handleView.setImageDrawable(icons.get("small"));
     }
@@ -156,6 +160,17 @@ public class Vendor extends Model {
         ((TextInputEditText) v.findViewById(R.id.edit_vendor_url)).setText(url);
 
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    @Override
+    public HashMap parseEditItem(View containerView) {
+        HashMap ret = new HashMap();
+
+        ret.put("is_enabled", 1);
+        ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
+        ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
+        ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());
+        return ret;
     }
 
 }
