@@ -24,14 +24,14 @@ import ru.dvs.eshop.admin.utils.Utils;
 /**
  * Асинхронное подключение к API сайта
  */
-public class POSTQuery extends AsyncTask<Void, Void, Void> {
+public class PostQuery extends AsyncTask<Void, Void, Void> {
     protected int status = 0;
     protected String response = "";
     private String mToken;
     private JSONObject mJsonObj;
     private String mSite;
 
-    public POSTQuery(String site, String token, String controller, String method) {
+    public PostQuery(String site, String token, String controller, String method) {
         mSite = site;
         mToken = token;
         mJsonObj = new JSONObject();
@@ -40,7 +40,7 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         put("method", method);
     }
 
-    public POSTQuery(String site, String controller, String method) {
+    public PostQuery(String site, String controller, String method) {
         mSite = site;
         mToken = null;
         mJsonObj = new JSONObject();
@@ -75,8 +75,8 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
             status = 1;
             response = "-1";//Ошибка. Нет подключения
             showErrorMsg();
-            Log.e("POSTQuery", "mStatus = " + status);
-            Log.e("POSTQuery", "mResponse = " + response);
+            Log.e("PostQuery", "mStatus = " + status);
+            Log.e("PostQuery", "mResponse = " + response);
             return null;
         }
         String result;
@@ -100,8 +100,8 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         if (status != 0) {
             showErrorMsg();
         }
-        Log.e("POSTQuery", "mStatus = " + status);
-        Log.e("POSTQuery", "mResponse = " + response);
+        Log.e("PostQuery", "mStatus = " + status);
+        Log.e("PostQuery", "mResponse = " + response);
         response = response.replace(":null", ":\"\"");
         return null;
     }

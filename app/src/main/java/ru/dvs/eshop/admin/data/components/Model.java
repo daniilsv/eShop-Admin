@@ -14,8 +14,8 @@ import java.util.Map;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.Site;
-import ru.dvs.eshop.admin.data.network.FILEQuery;
-import ru.dvs.eshop.admin.data.network.POSTQuery;
+import ru.dvs.eshop.admin.data.network.FileGetQuery;
+import ru.dvs.eshop.admin.data.network.PostQuery;
 import ru.dvs.eshop.admin.utils.Function;
 
 public class Model {
@@ -24,6 +24,7 @@ public class Model {
     public final Site site;
     public int id;
     public int original_id;
+    public boolean is_enabled;
     private String mWhere = null;
     private String mOrder = null;
 
@@ -33,12 +34,13 @@ public class Model {
         site = Core.getInstance().site;
     }
 
+
     protected Object newInstance(Cursor c) {
         return null;
     }
 
     public void getFromSite(HashMap<String, String> additional, final Function callback) {
-        POSTQuery task = new POSTQuery(site.host, site.token, controller, "get") {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "get") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -56,7 +58,33 @@ public class Model {
         task.execute();
     }
 
+    public void editOnSite(final HashMap<String, String> data, final Function callback) {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "edit") {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0)
+                    return;
+                parseResponseEdit(response, data);
+                if (callback != null)
+                    callback.run();
+            }
+        };
+        task.put("what", type);
+        task.put("id", original_id + "");
+        task.put("data", data);
+        task.execute();
+    }
+
+    public void setFieldOnSite(String field, String value, Function callback) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(field, value);
+        editOnSite(map, callback);
+    }
+
     public void parseResponseGet(String response) {
+    }
+
+    public void parseResponseEdit(String response, HashMap<String, String> data) {
     }
 
     public void parseResponseReorder(String response, ArrayList<Model> arr) {
@@ -103,7 +131,7 @@ public class Model {
         for (Object item : arr) {
             items.add(((Model) item).original_id);
         }
-        POSTQuery task = new POSTQuery(site.host, site.token, controller, "reorder") {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -130,7 +158,7 @@ public class Model {
                         String href = "/upload/" + icon_node.getString(key);
                         icons_href.put(key, href);
                         String tmp[] = href.split("/");
-                        new FILEQuery(site.host + href, Core.getStorageDir() + "/icons/" + folder + "/" + tmp[tmp.length - 1]).execute();
+                        new FileGetQuery(site.host + href, Core.getStorageDir() + "/icons/" + folder + "/" + tmp[tmp.length - 1]).execute();
                     }
                 }
         } catch (JSONException e) {

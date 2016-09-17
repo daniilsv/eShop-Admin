@@ -11,11 +11,11 @@ import java.net.URL;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.utils.Utils;
 //Удобный класс скачивания файла с сайта на устройство
-public class FILEQuery extends AsyncTask<Void, Void, Void> {
+public class FileGetQuery extends AsyncTask<Void, Void, Void> {
     public File result;
     private String mUrl;
 
-    public FILEQuery(String _url, String destination) {
+    public FileGetQuery(String _url, String destination) {
         mUrl = _url;
         String r = "";
         String t[] = destination.split("/");

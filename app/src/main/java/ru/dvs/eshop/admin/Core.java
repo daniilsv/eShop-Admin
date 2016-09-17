@@ -11,9 +11,6 @@ import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.Site;
 import ru.dvs.eshop.admin.ui.activities.MainActivity;
 
-
-//TODO: Упразднить класс. Раскидать функции по соответствующим пакетам
-
 /**
  * Ядро системы.
  * Пока еще Дает доступ к некоторым функциям.

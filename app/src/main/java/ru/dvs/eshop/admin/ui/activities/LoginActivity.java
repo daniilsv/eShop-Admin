@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.Preferences;
-import ru.dvs.eshop.admin.data.network.POSTQuery;
+import ru.dvs.eshop.admin.data.network.PostQuery;
 import ru.dvs.eshop.admin.utils.Encode;
 import ru.dvs.eshop.admin.utils.Utils;
 
@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText siteEditText = (EditText) findViewById(R.id.site);
         if (siteEditText != null) {
             site = siteEditText.getText().toString();
-            POSTQuery task = new POSTQuery(site, "api", "ping") {
+            PostQuery task = new PostQuery(site, "api", "ping") {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0) {
@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailEditText.getText().toString();
             String pass_md5 = Encode.MD5(passEditText.getText().toString());
 
-            POSTQuery task = new POSTQuery(site, "users", "login_api") {
+            PostQuery task = new PostQuery(site, "users", "login_api") {
                 @Override
                 protected void onPostExecute(Void voids) {
                     if (status == 0 && Encode.isValidMD5(response)) {
@@ -175,7 +175,7 @@ public class LoginActivity extends AppCompatActivity {
             this.finish();
             return;
         }
-        POSTQuery task = new POSTQuery(site, token, "api", "get_token_info") {
+        PostQuery task = new PostQuery(site, token, "api", "get_token_info") {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status == 0) {
