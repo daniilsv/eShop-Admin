@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +15,7 @@
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <LinearLayout
             android:id="@+id/site_layout"
@@ -31,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:hint="Введите адрес сайта"
-                android:text="shop.daniils.ru" />
+                android:text="shop.daniils.ru"/>
 
             <Button
                 android:id="@+id/start_next1_button"
@@ -39,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Далее" />
+                android:text="Далее"/>
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +59,7 @@
                 android:layout_gravity="center"
                 android:hint="Введите eMail"
                 android:inputType="textEmailAddress"
-                android:text="danstrrr@yandex.ru" />
+                android:text="danstrrr@yandex.ru"/>
 
             <EditText
                 android:id="@+id/password"
@@ -66,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:hint="Введите пароль"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"/>
 
             <Button
                 android:id="@+id/start_next2_button"
@@ -74,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Далее" />
+                android:text="Далее"/>
         </LinearLayout>
 
         <LinearLayout
@@ -91,13 +92,13 @@
                 android:id="@+id/response_image"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/response_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"/>
 
             <Button
                 android:id="@+id/start_next3_button"
@@ -105,13 +106,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Далее" />
+                android:text="Далее"/>
         </LinearLayout>
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
@@ -122,6 +123,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@android:drawable/ic_media_previous" />
+        android:background="@android:drawable/ic_media_previous"/>
 
 </RelativeLayout>

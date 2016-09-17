@@ -15,7 +15,6 @@ import android.view.View;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
 
 /**
@@ -66,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        new Vendor().getFromSite(null);
-        //getFragmentManager().beginTransaction().replace(R.id.main_frame, new VendorsFragment()).commit();
     }
 
     //При возвращении из другой активности
@@ -131,11 +128,6 @@ public class MainActivity extends AppCompatActivity {
         // }
     }
 
-    //Переподключает текущий фрагмент
-    public void reattachCurFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction().detach(curFragment).attach(curFragment).commit();
-    }
-
     //При выборе фрагмента в левом меню
     private class LeftNavigationMenuItemListener implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -150,7 +142,11 @@ public class MainActivity extends AppCompatActivity {
             }
             //Устанавливаем новый фрагмент
             if (curFragment != null)
-                getFragmentManager().beginTransaction().replace(R.id.main_frame, curFragment).commit();
+                getFragmentManager().
+                        beginTransaction().
+                        setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).
+                        replace(R.id.main_frame, curFragment).
+                        commit();
 
             drawer.closeDrawer(GravityCompat.START);
             return true;

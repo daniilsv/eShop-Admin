@@ -102,6 +102,7 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
         }
         Log.e("POSTQuery", "mStatus = " + status);
         Log.e("POSTQuery", "mResponse = " + response);
+        response = response.replace(":null", ":\"\"");
         return null;
     }
 
@@ -148,6 +149,12 @@ public class POSTQuery extends AsyncTask<Void, Void, Void> {
                 break;
             case "7":
                 makeErrorToast(R.string.query_error_7);
+                break;
+            case "8":
+                makeErrorToast(R.string.query_error_8);
+                break;
+            case "9":
+                makeErrorToast(R.string.query_error_9);
                 break;
         }
     }

@@ -3,6 +3,7 @@ package ru.dvs.eshop.admin.data.components.eshop;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,18 +132,30 @@ public class Vendor extends Model {
     public void fillViewForReadItem(View insertPointView) {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = vi.inflate(R.layout.view_vendor, null);
+
         ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
-        ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
-        ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
+
+        if (description.equals(""))
+            v.findViewById(R.id.view_vendor_description).setVisibility(View.GONE);
+        else ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
+
+        if (url.equals(""))
+            v.findViewById(R.id.view_vendor_url).setVisibility(View.GONE);
+        else ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
+
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
-    public void fillViewForEditItem(View view) {
-        TextView textView = (TextView) view.findViewById(R.id.title);
-        ImageView handleView = (ImageView) view.findViewById(R.id.image);
-        textView.setText(title);
-        handleView.setImageDrawable(icons.get("small"));
+    public void fillViewForEditItem(View insertPointView) {
+        LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = vi.inflate(R.layout.edit_vendor, null);
+
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_title)).setText(title);
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_description)).setText(description);
+        ((TextInputEditText) v.findViewById(R.id.edit_vendor_url)).setText(url);
+
+        ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
 }

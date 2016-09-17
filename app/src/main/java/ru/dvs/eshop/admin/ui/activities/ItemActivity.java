@@ -1,6 +1,7 @@
 package ru.dvs.eshop.admin.ui.activities;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -20,32 +21,34 @@ public class ItemActivity extends AppCompatActivity {
 
         Core core = Core.getInstance();
         core.setActivity(this);
+
         ItemViewFragment itemViewFragment = new ItemViewFragment();
         itemViewFragment.setArguments(getIntent().getExtras());
+        placeFragment(itemViewFragment, false);
 
-        //intent
-        //what
-        //id
-
-        //itemView
-        //itemEdit
-        //(Button)DeleteItem
-
-
-        placeFragment(itemViewFragment);
     }
 
     //При нажатии кнопки назад
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
     //Обновление текуущего фрагмента
-    private void placeFragment(Fragment fragment) {
+    public void placeFragment(Fragment fragment, boolean addToBackStack) {
         if (fragment == null)
             return;
-        getFragmentManager().beginTransaction().replace(R.id.item_frame, fragment).commit();
+        FragmentTransaction ft = getFragmentManager().
+                beginTransaction().
+                setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).
+                replace(R.id.item_frame, fragment);
+        if (addToBackStack)
+            ft.addToBackStack(null);
+        ft.commit();
     }
 
 }
