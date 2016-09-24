@@ -55,7 +55,7 @@ public class DB {
         ContentValues cv = new ContentValues();
         for (Object o : sm.entrySet()) {
             Map.Entry pair = (Map.Entry) o;
-            cv.put((String) pair.getKey(), (String) pair.getValue());
+            cv.put("" + pair.getKey(), "" + pair.getValue());
         }
         return ourInstance.db.update(table, cv, "id=" + id, null);
     }

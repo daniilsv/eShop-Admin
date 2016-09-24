@@ -27,18 +27,38 @@ public class ItemViewFragment extends Fragment {
     FloatingActionButton editFab;
     View fragment_view;
     Model item;
+    Bundle args = null;
 
     public void fillData() {
-        String type = getArguments().getString("item_type", "-1");
-        int itemId = getArguments().getInt("item_id", -1);
+        if (args == null)
+            args = getArguments();
+
+        String type = args.getString("item_type", "-1");
+        int itemId = args.getInt("item_id", -1);
         switch (type) {
             case "vendor":
-                item = Vendor.getVendorById(itemId);
+                item = new Vendor().getItemById(itemId);
                 collapsingToolbar.setTitle(((Vendor) item).title);
                 flexibleImage.setImageDrawable(((Vendor) item).icons.get("big"));
                 item.fillViewForReadItem(insertPointView);
                 break;
         }
+
+        Button swapEnabled = new Button(getActivity());
+        swapEnabled.setText("Change visibility");
+        swapEnabled.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                item.setFieldOnSite("is_enabled", (!item.is_enabled) ? "1" : "0", new Function() {
+                    @Override
+                    public void run() {
+                        Core.makeToast("Changed visible", false);
+                        item.is_enabled = !item.is_enabled;
+                    }
+                });
+            }
+        });
+        ((ViewGroup) insertPointView.findViewById(R.id.view_container)).addView(swapEnabled, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
@@ -50,9 +70,7 @@ public class ItemViewFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
-                        setDuration(500).
-                        start();
+                ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).setDuration(500).start();
                 getActivity().onBackPressed();
             }
         });
@@ -63,24 +81,6 @@ public class ItemViewFragment extends Fragment {
         flexibleImage = (ImageView) fragment_view.findViewById(R.id.flexible_image);
         insertPointView = (ViewGroup) fragment_view.findViewById(R.id.item_frame);
 
-        fillData();
-/*
-        editFabButton = new FloatingActionButton.Builder(getActivity())
-                .withDrawable(getResources().getDrawable(R.drawable.ic_menu_slideshow))
-                .withButtonColor(Color.BLACK)
-                .withGravity(Gravity.BOTTOM | Gravity.START)
-                .withMargins(0, 0, 16, 16)
-                .create();
-
-        editFabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ItemEditFragment itemEditFragment = new ItemEditFragment();
-                itemEditFragment.setArguments(getArguments());
-                ((ItemActivity) getActivity()).placeFragment(itemEditFragment, true);
-            }
-        });
-*/
 
         editFab = (FloatingActionButton) fragment_view.findViewById(R.id.fab_edit);
         editFab.setOnClickListener(new View.OnClickListener() {
@@ -89,20 +89,6 @@ public class ItemViewFragment extends Fragment {
                 ItemEditFragment itemEditFragment = new ItemEditFragment();
                 itemEditFragment.setArguments(getArguments());
                 ((ItemActivity) getActivity()).placeFragment(itemEditFragment, true);
-            }
-        });
-
-        Button setEnabled = (Button) fragment_view.findViewById(R.id.is_visible);
-        setEnabled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                item.setFieldOnSite("is_enabled", (!item.is_enabled) ? "1" : "0", new Function() {
-                    @Override
-                    public void run() {
-                        Core.makeToast("Changed visible", false);
-                        item.is_enabled = !item.is_enabled;
-                    }
-                });
             }
         });
 
@@ -118,6 +104,7 @@ public class ItemViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        fillData();
         editFab.setVisibility(View.VISIBLE);
         ObjectAnimator.ofFloat(fragment_view, "alpha", 0, 1).
                 setDuration(500).

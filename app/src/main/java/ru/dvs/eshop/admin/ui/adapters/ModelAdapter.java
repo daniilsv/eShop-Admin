@@ -19,6 +19,7 @@ import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperViewHolder
 
 public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHolder>
         implements ItemTouchHelperAdapter {
+    private static int mItemPositionInUse = -1;
     private final Activity mActivity;
     private ArrayList<Model> mItems = new ArrayList<>();
     private int mRowResId;
@@ -27,6 +28,15 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         mActivity = activity;
         mItems = items;
         mRowResId = rowResId;
+    }
+
+    public void updateItemInUse() {
+        if (mItemPositionInUse != -1) {
+            Model item = mItems.get(mItemPositionInUse).refresh();
+            mItems.set(mItemPositionInUse, item);
+            notifyItemChanged(mItemPositionInUse);
+            mItemPositionInUse = -1;
+        }
     }
 
     public ArrayList<Model> getItems() {
@@ -48,7 +58,6 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         holder.setItem(mItems.get(position));
     }
 
-
     @Override
     public void onItemDismiss(int position) {
         mItems.remove(position);
@@ -67,11 +76,11 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         return mItems.size();
     }
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener {
+    static class ItemViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener {
         private final Activity mActivity;
         private Model mItem;
 
-        public ItemViewHolder(Activity activity, View itemView) {
+        ItemViewHolder(Activity activity, View itemView) {
             super(itemView);
             mActivity = activity;
         }
@@ -88,6 +97,7 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
 
         @Override
         public void onClick(View v) {
+            mItemPositionInUse = getAdapterPosition();
             Intent intent = new Intent(mActivity, ItemActivity.class);
             intent.putExtra("item_type", mItem.type);
             intent.putExtra("item_id", mItem.id);
@@ -97,7 +107,7 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         public void setItem(Model item) {
             mItem = item;
             itemView.setOnClickListener(this);
-            item.fillViewForListItem(itemView);
+            mItem.fillViewForListItem(itemView);
         }
     }
 }

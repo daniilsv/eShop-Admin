@@ -33,7 +33,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         View fragment_view = inflater.inflate(R.layout.fragment_vendors, container, false);
 
 
-        ArrayList<Model> vendors = Vendor.getVendors();
+        ArrayList<Model> vendors = new Vendor().getItems();
 
         adapter = new ModelAdapter(getActivity(), vendors, R.layout.row_vendor);
 
@@ -66,6 +66,11 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         return fragment_view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.updateItemInUse();
+    }
 
     @Override
     public void onRefresh() {
@@ -83,7 +88,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     void onItemsLoadComplete() {
-        ArrayList<Model> vendors = Vendor.getVendors();
+        ArrayList<Model> vendors = new Vendor().getItems();
         adapter.setItems(vendors);
         recyclerView.swapAdapter(adapter, false);
         mSwipeRefreshLayout.setRefreshing(false);

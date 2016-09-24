@@ -30,22 +30,24 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
     private String mToken;
     private JSONObject mJsonObj;
     private String mSite;
+    private String mController;
+    private String mMethod;
 
     public PostQuery(String site, String token, String controller, String method) {
         mSite = site;
         mToken = token;
+        mController = controller;
+        mMethod = method;
         mJsonObj = new JSONObject();
         put("token", mToken);
-        put("controller", controller);
-        put("method", method);
     }
 
     public PostQuery(String site, String controller, String method) {
         mSite = site;
         mToken = null;
+        mController = controller;
+        mMethod = method;
         mJsonObj = new JSONObject();
-        put("controller", controller);
-        put("method", method);
     }
 
     public void put(String a, String b) {
@@ -81,7 +83,7 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
         }
         String result;
         try {
-            result = sendPOST(mSite + "/api", mJsonObj);
+            result = sendPOST(mSite + "/api/" + mController + "/" + mMethod, mJsonObj);
             JSONObject node = new JSONObject(result);
             status = node.getInt("status");
             response = node.getString("response");
@@ -135,8 +137,10 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
                 makeErrorToast(R.string.query_error_1);
                 break;
             case "2":
-            case "3":
                 makeErrorToast(R.string.query_error_2);
+                break;
+            case "3":
+                makeErrorToast(R.string.query_error_3);
                 break;
             case "4":
                 makeErrorToast(R.string.query_error_4);
@@ -154,7 +158,7 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
                 makeErrorToast(R.string.query_error_8);
                 break;
             case "9":
-                makeErrorToast(R.string.query_error_9);
+                makeErrorToast(R.string.query_error_8);
                 break;
         }
     }

@@ -20,14 +20,16 @@
     <string name="start_login_failed">Login or password is incorrect. Try again</string>
     <string name="start_success">And now you can use this app</string>
 
-    <string name="query_error_1">Controller not found</string>
-    <string name="query_error_2">Method not found</string>
+    <string name="query_error_1">Wrong request</string>
+    <string name="query_error_2">Controller not found</string>
+    <string name="query_error_3">Method not found</string>
     <string name="query_error_4">Login incorrect</string>
     <string name="query_error_5">Token is not activated</string>
     <string name="query_error_6">Token is active</string>
     <string name="query_error_7">Token is blocked</string>
-    <string name="query_error_8">Wrong request</string>
-    <string name="query_error_9">Element is deleted</string>
+    <string name="query_error_8">Element is deleted</string>
+    <string name="query_error_9">---</string>
+
     <string name="query_error_m1">No connection</string>
     <string name="query_error_m2">Connection error</string>
     <string name="query_error_m3">Error response parsing</string>

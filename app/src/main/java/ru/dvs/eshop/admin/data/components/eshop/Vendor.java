@@ -66,15 +66,15 @@ public class Vendor extends Model {
         }
     }
 
-    public static ArrayList getVendors() {
-        return new Vendor().
-                orderBy("ordering", "ASC").
+    @Override
+    public ArrayList getItems() {
+        return orderBy("ordering", "ASC").
                 getFromDataBase("eshop_vendors");
     }
 
-    public static Vendor getVendorById(int id) {
-        return (Vendor) new Vendor().
-                getByItemId("eshop_vendors", id);
+    @Override
+    public Model getItemById(int id) {
+        return (Vendor) getByItemId("eshop_vendors", id);
     }
 
     @Override
@@ -113,6 +113,10 @@ public class Vendor extends Model {
             map.put("ordering", ++i + "");
             DB.update("com_eshop_vendors", ((Model) item).id, map);
         }
+    }
+
+    public void parseResponseEdit(String response, HashMap<String, String> data) {
+        DB.update("com_eshop_vendors", id, data);
     }
 
     @Override
@@ -164,5 +168,4 @@ public class Vendor extends Model {
         ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());
         return ret;
     }
-
 }

@@ -34,6 +34,14 @@ public class Model {
         site = Core.getInstance().site;
     }
 
+    public ArrayList getItems() {
+        return null;
+    }
+
+    public Model getItemById(int id) {
+        return null;
+    }
+
     protected Object newInstance(Cursor c) {
         return null;
     }
@@ -179,7 +187,9 @@ public class Model {
         return null;
     }
 
-
+    public Model refresh() {
+        return getItemById(id);
+    }
 }
 
 

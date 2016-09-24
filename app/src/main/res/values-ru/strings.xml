@@ -11,8 +11,8 @@
     <string name="navigation_drawer_open">Открыть</string>
     <string name="enter_wait">Ожидайте</string>
     <string name="no_more_content">Все записи уже загружены</string>
-    <string name="query_error_1">Контроллер не найден</string>
-    <string name="query_error_2">Метод не найден</string>
+    <string name="query_error_1">Неверный запрос</string>
+    <string name="query_error_2">Контроллер не найден</string>
     <string name="query_error_4">Логин или пароль не верный</string>
     <string name="query_error_5">Токен еще не активирован</string>
     <string name="query_error_6">Токен активирован</string>
@@ -21,6 +21,7 @@
     <string name="query_error_m2">Ошибка подключения</string>
     <string name="query_error_m3">Ошибка первичного парсинга ответа</string>
     <string name="query_error_null">Ошибка выполнения функции</string>
-    <string name="query_error_8">Неверный запрос</string>
-    <string name="query_error_9">Элемент уже удалён</string>
+    <string name="query_error_3">Метод не найден</string>
+    <string name="query_error_8">Элемент уже удалён</string>
+    <string name="query_error_9">---</string>
 </resources>

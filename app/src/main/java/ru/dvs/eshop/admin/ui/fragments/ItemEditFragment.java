@@ -30,7 +30,7 @@ public class ItemEditFragment extends Fragment {
         int itemId = getArguments().getInt("item_id", -1);
         switch (type) {
             case "vendor":
-                item = Vendor.getVendorById(itemId);
+                item = new Vendor().getItemById(itemId);
                 toolbar.setTitle(((Vendor) item).title);
                 item.fillViewForEditItem(insertPointView);
                 break;
