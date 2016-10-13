@@ -46,15 +46,18 @@ public class Model {
         return null;
     }
 
-    public void getFromSite(HashMap<String, String> additional, final Function callback) {
+    public void getFromSite(HashMap<String, String> additional, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "get") {
             @Override
             protected void onPostExecute(Void voids) {
-                if (status != 0)
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
                     return;
+                }
                 parseResponseGet(response);
-                if (callback != null)
-                    callback.run();
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
             }
         };
         task.put("what", type);
@@ -65,15 +68,22 @@ public class Model {
         task.execute();
     }
 
-    public void editOnSite(final HashMap<String, String> data, final Function callback) {
+    public void getFromSite(HashMap<String, String> additional, final Function callback) {
+        getFromSite(additional, callback, callback);
+    }
+
+    public void editOnSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "edit") {
             @Override
             protected void onPostExecute(Void voids) {
-                if (status != 0)
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
                     return;
+                }
                 parseResponseEdit(response, data);
-                if (callback != null)
-                    callback.run();
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
             }
         };
         task.put("what", type);
@@ -82,13 +92,56 @@ public class Model {
         task.execute();
     }
 
+    public void editOnSite(HashMap<String, String> data, final Function callback) {
+        editOnSite(data, callback, callback);
+    }
+
+    public void addToSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "add") {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
+                    return;
+                }
+                parseResponseAdd(response, data);
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
+            }
+        };
+        task.put("what", type);
+        task.put("data", data);
+        task.execute();
+    }
+
+    public void addToSite(HashMap<String, String> data, final Function callback) {
+        addToSite(data, callback, callback);
+    }
+
+    public HashMap<String, String> getHashMap() {
+        return new HashMap<>();
+    }
+
+    public void addToDB() {
+    }
+
+    public void setFieldOnSite(String field, String value, Function callbackSuccess, Function callbackFailed) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(field, value);
+        editOnSite(map, callbackSuccess, callbackFailed);
+    }
+
     public void setFieldOnSite(String field, String value, Function callback) {
         HashMap<String, String> map = new HashMap<>();
         map.put(field, value);
-        editOnSite(map, callback);
+        editOnSite(map, callback, callback);
     }
 
     public void parseResponseGet(String response) {
+    }
+
+    public void parseResponseAdd(String response, HashMap<String, String> data) {
     }
 
     public void parseResponseEdit(String response, HashMap<String, String> data) {

@@ -24,6 +24,8 @@ public class ItemEditFragment extends Fragment {
     ViewGroup insertPointView;
     View fragment_view;
     Model item;
+    private boolean mIsAdding = false;
+    private ItemViewFragment mitemViewFragment;
 
     public void fillData() {
         String type = getArguments().getString("item_type", "-1");
@@ -49,6 +51,12 @@ public class ItemEditFragment extends Fragment {
                 ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
                         setDuration(500).
                         start();
+                if (mIsAdding) {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("original_id", -1 + "");
+                    item.parseResponseEdit(null, map);
+                    getActivity().finish();
+                }
                 getActivity().onBackPressed();
             }
         });
@@ -59,25 +67,43 @@ public class ItemEditFragment extends Fragment {
 
         fillData();
         Button editBut = (Button) fragment_view.findViewById(R.id.button_save);
+        if (mIsAdding)
+            editBut.setText("INSERT");
         editBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.setEnabled(false);
                 HashMap map = item.parseEditItem(insertPointView);
-                item.editOnSite(map, new Function() {
-                    @Override
-                    public void run() {
-                        Core.makeToast("Updated", false);
-                        ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
-                                setDuration(500).
-                                start();
-                        getActivity().onBackPressed();
-                    }
-                });
+                if (mIsAdding)
+                    item.addToSite(map, new Function() {
+                        @Override
+                        public void run() {
+                            Core.makeToast("Inserted", false);
+                            ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
+                                    setDuration(500).
+                                    start();
+                            getActivity().onBackPressed();
+                        }
+                    });
+                else
+                    item.editOnSite(map, new Function() {
+                        @Override
+                        public void run() {
+                            Core.makeToast("Updated", false);
+                            ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
+                                    setDuration(500).
+                                    start();
+                            getActivity().onBackPressed();
+                        }
+                    });
 
             }
         });
         return fragment_view;
+    }
+
+    public void setIsAdding(boolean isAdding) {
+        mIsAdding = isAdding;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class ItemViewFragment extends Fragment {
                         Core.makeToast("Changed visible", false);
                         item.is_enabled = !item.is_enabled;
                     }
-                });
+                }, null);
             }
         });
         ((ViewGroup) insertPointView.findViewById(R.id.view_container)).addView(swapEnabled, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -86,13 +86,21 @@ public class ItemViewFragment extends Fragment {
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ItemEditFragment itemEditFragment = new ItemEditFragment();
-                itemEditFragment.setArguments(getArguments());
-                ((ItemActivity) getActivity()).placeFragment(itemEditFragment, true);
+                startEdit(false);
             }
         });
-
+        if (getArguments().getBoolean("is_adding")) {
+            getArguments().putBoolean("is_adding", false);
+            startEdit(true);
+        }
         return fragment_view;
+    }
+
+    public void startEdit(boolean is_adding) {
+        ItemEditFragment itemEditFragment = new ItemEditFragment();
+        itemEditFragment.setArguments(getArguments());
+        itemEditFragment.setIsAdding(is_adding);
+        ((ItemActivity) getActivity()).placeFragment(itemEditFragment, true);
     }
 
     @Override

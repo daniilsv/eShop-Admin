@@ -33,6 +33,11 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
     public void updateItemInUse() {
         if (mItemPositionInUse != -1) {
             Model item = mItems.get(mItemPositionInUse).refresh();
+            if (item.original_id == -1) {
+                mItems.remove(mItemPositionInUse);
+                notifyItemRemoved(mItemPositionInUse);
+                return;
+            }
             mItems.set(mItemPositionInUse, item);
             notifyItemChanged(mItemPositionInUse);
             mItemPositionInUse = -1;
@@ -69,6 +74,10 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         Collections.swap(mItems, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         return true;
+    }
+
+    public void setItemPositionInUse(int itemPositionInUse) {
+        mItemPositionInUse = itemPositionInUse;
     }
 
     @Override

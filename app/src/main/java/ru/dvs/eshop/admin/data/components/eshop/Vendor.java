@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
@@ -36,6 +37,14 @@ public class Vendor extends Model {
 
     public Vendor() {
         super("eshop", "vendor");
+        title = "";
+        description = "";
+        is_enabled = true;
+        ordering = -1;
+        url = "";
+        icons_href = new HashMap<>();
+        icons = new HashMap<>();
+
     }
 
     public Vendor(Cursor c) {
@@ -66,11 +75,28 @@ public class Vendor extends Model {
         }
     }
 
+    public HashMap<String, String> getHashMap() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("original_id", original_id + "");
+        map.put("is_enabled", (is_enabled ? 1 : 0) + "");
+        map.put("title", title);
+        map.put("description", description);
+        map.put("url", url);
+        map.put("ordering", ordering + "");
+        map.put("icon", new JSONObject(icons_href).toString());
+        return map;
+    }
+
+    public void addToDB() {
+        id = (int) DB.insert("com_eshop_vendors", getHashMap());
+    }
+
     @Override
     public ArrayList getItems() {
         return orderBy("ordering", "ASC").
                 getFromDataBase("eshop_vendors");
     }
+
 
     @Override
     public Model getItemById(int id) {
@@ -79,6 +105,10 @@ public class Vendor extends Model {
 
     @Override
     public void parseResponseGet(String response) {
+        ArrayList<Model> items = getItems();
+        HashMap<Integer, Boolean> original_ids = new HashMap<>();
+        for (Model item : items)
+            original_ids.put(item.original_id, true);
         try {
             //Распарсиваем полученную JSON-строку
             JSONObject node_root = new JSONObject(response);
@@ -98,10 +128,15 @@ public class Vendor extends Model {
                 map.put("url", item.getString("url") + "");
                 map.put("ordering", item.getInt("ordering") + "");
                 DB.insertOrUpdate("com_eshop_vendors", "original_id=" + item.getInt("id"), map);
+                original_ids.remove(item.getInt("id"));
             }
         } catch (JSONException e) {
             //ERROR while parse data!
             e.printStackTrace();
+        }
+        Set<Integer> keys = original_ids.keySet();
+        for (int orig_id : keys) {
+            DB.delete("com_eshop_vendors", "original_id=" + orig_id, null);
         }
     }
 
@@ -116,6 +151,10 @@ public class Vendor extends Model {
     }
 
     public void parseResponseEdit(String response, HashMap<String, String> data) {
+        DB.update("com_eshop_vendors", id, data);
+    }
+
+    public void parseResponseAdd(String response, HashMap<String, String> data) {
         DB.update("com_eshop_vendors", id, data);
     }
 
@@ -161,7 +200,6 @@ public class Vendor extends Model {
     @Override
     public HashMap parseEditItem(View containerView) {
         HashMap ret = new HashMap();
-
         ret.put("is_enabled", 1);
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
