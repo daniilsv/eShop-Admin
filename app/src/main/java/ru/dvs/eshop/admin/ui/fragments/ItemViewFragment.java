@@ -81,7 +81,7 @@ public class ItemViewFragment extends Fragment {
         flexibleImage = (ImageView) fragment_view.findViewById(R.id.flexible_image);
         insertPointView = (ViewGroup) fragment_view.findViewById(R.id.item_frame);
 
-
+/*
         editFab = (FloatingActionButton) fragment_view.findViewById(R.id.fab_edit);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +92,7 @@ public class ItemViewFragment extends Fragment {
         if (getArguments().getBoolean("is_adding")) {
             getArguments().putBoolean("is_adding", false);
             startEdit(true);
-        }
+        }*/
         return fragment_view;
     }
 
@@ -106,14 +106,14 @@ public class ItemViewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        editFab.setVisibility(View.GONE);
+        //    editFab.setVisibility(View.GONE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         fillData();
-        editFab.setVisibility(View.VISIBLE);
+//        editFab.setVisibility(View.VISIBLE);
         ObjectAnimator.ofFloat(fragment_view, "alpha", 0, 1).
                 setDuration(500).
                 start();

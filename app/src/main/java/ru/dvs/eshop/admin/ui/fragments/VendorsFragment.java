@@ -2,13 +2,11 @@ package ru.dvs.eshop.admin.ui.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +21,6 @@ import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.adapters.ModelAdapter;
-import ru.dvs.eshop.admin.ui.views.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 import ru.dvs.eshop.admin.utils.Function;
 
@@ -53,7 +50,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
+/*
         FloatingActionButton fabButton = new FloatingActionButton.Builder(getActivity())
                 .withDrawable(getResources().getDrawable(R.drawable.ic_menu_send))
                 .withButtonColor(Color.MAGENTA)
@@ -67,7 +64,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 new Vendor().reorderItems(arr, null);
             }
         });
-
+*/
         return fragment_view;
     }
 
