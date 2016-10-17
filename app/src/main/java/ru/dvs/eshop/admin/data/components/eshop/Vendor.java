@@ -91,6 +91,10 @@ public class Vendor extends Model {
         id = (int) DB.insert("com_eshop_vendors", getHashMap());
     }
 
+    public void deleteFromDB() {
+        DB.delete("com_eshop_vendors", "id=" + id, null);
+    }
+
     @Override
     public ArrayList getItems() {
         return orderBy("ordering", "ASC").
@@ -200,6 +204,7 @@ public class Vendor extends Model {
     @Override
     public HashMap parseEditItem(View containerView) {
         HashMap ret = new HashMap();
+        ret.put("ordering", ordering);
         ret.put("is_enabled", 1);
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());

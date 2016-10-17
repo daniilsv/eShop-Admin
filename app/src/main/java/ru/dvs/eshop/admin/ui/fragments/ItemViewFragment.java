@@ -42,23 +42,6 @@ public class ItemViewFragment extends Fragment {
                 item.fillViewForReadItem(insertPointView);
                 break;
         }
-/*
-        Button swapEnabled = new Button(getActivity());
-        swapEnabled.setText("Change visibility");
-        swapEnabled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                item.setFieldOnSite("is_enabled", (!item.is_enabled) ? "1" : "0", new Function() {
-                    @Override
-                    public void run() {
-                        Core.makeToast("Changed visible", false);
-                        item.is_enabled = !item.is_enabled;
-                    }
-                }, null);
-            }
-        });
-        ((ViewGroup) insertPointView.findViewById(R.id.view_container)).addView(swapEnabled, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-*/
     }
 
     @Override
@@ -82,7 +65,7 @@ public class ItemViewFragment extends Fragment {
         insertPointView = (ViewGroup) fragment_view.findViewById(R.id.item_frame);
 
 
-        editFab = (FloatingActionButton) getActivity().findViewById(R.id.vendor_edit__button);
+        editFab = (FloatingActionButton) getActivity().findViewById(R.id.item_edit_button);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,16 +73,27 @@ public class ItemViewFragment extends Fragment {
             }
         });
 
-        editFab = (FloatingActionButton) getActivity().findViewById(R.id.vendor_delete_button);
+        editFab = (FloatingActionButton) getActivity().findViewById(R.id.item_delete_button);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Core.makeToast("Вы удалили свою жизнь", false);
+                item.deleteFromSite(item.original_id, new Function() {
+                    @Override
+                    public void run() {
+                        Core.makeToast("Successfully deleted. Drag to update plz.", false);
+                        getActivity().finish();
+                    }
+                }, new Function() {
+                    @Override
+                    public void run() {
+                        Core.makeToast("Opps... Something was wrong", false);
+                    }
+                });
             }
         });
 
 
-        editFab = (FloatingActionButton) getActivity().findViewById(R.id.set_invisible_button);
+        editFab = (FloatingActionButton) getActivity().findViewById(R.id.item_set_invisible_button);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,14 +125,16 @@ public class ItemViewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        //    editFab.setVisibility(View.GONE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         fillData();
-//        editFab.setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.item_floating_button).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.item_edit_button).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.item_delete_button).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.item_set_invisible_button).setVisibility(View.VISIBLE);
         ObjectAnimator.ofFloat(fragment_view, "alpha", 0, 1).
                 setDuration(500).
                 start();

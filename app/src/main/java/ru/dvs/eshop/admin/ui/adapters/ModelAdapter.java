@@ -34,6 +34,7 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         if (mItemPositionInUse != -1) {
             Model item = mItems.get(mItemPositionInUse).refresh();
             if (item.original_id == -1) {
+                item.deleteFromDB();
                 mItems.remove(mItemPositionInUse);
                 notifyItemRemoved(mItemPositionInUse);
                 return;

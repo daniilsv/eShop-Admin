@@ -118,5 +118,9 @@ public class ItemEditFragment extends Fragment {
         ObjectAnimator.ofFloat(fragment_view, "alpha", 0, 1).
                 setDuration(500).
                 start();
+        getActivity().findViewById(R.id.item_floating_button).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.item_edit_button).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.item_delete_button).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.item_set_invisible_button).setVisibility(View.GONE);
     }
 }

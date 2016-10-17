@@ -34,21 +34,12 @@ public class Model {
         site = Core.getInstance().site;
     }
 
-    public ArrayList getItems() {
-        return null;
-    }
-
-    public Model getItemById(int id) {
-        return null;
-    }
-
     protected Object newInstance(Cursor c) {
         return null;
     }
 
+
     public void getFromSite(HashMap<String, String> additional, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "get") {
-    public void getFromSite(HashMap<String, String> additional, final Function callback) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "get." + type) {
             @Override
             protected void onPostExecute(Void voids) {
@@ -73,9 +64,11 @@ public class Model {
         getFromSite(additional, callback, callback);
     }
 
+    public void parseResponseGet(String response) {
+    }
+
+
     public void editOnSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "edit") {
-    public void editOnSite(final HashMap<String, String> data, final Function callback) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "edit." + type) {
             @Override
             protected void onPostExecute(Void voids) {
@@ -99,35 +92,9 @@ public class Model {
         editOnSite(data, callback, callback);
     }
 
-    public void addToSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "add") {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
-                }
-                parseResponseAdd(response, data);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
-            }
-        };
-        task.put("what", type);
-        task.put("data", data);
-        task.execute();
+    public void parseResponseEdit(String response, HashMap<String, String> data) {
     }
 
-    public void addToSite(HashMap<String, String> data, final Function callback) {
-        addToSite(data, callback, callback);
-    }
-
-    public HashMap<String, String> getHashMap() {
-        return new HashMap<>();
-    }
-
-    public void addToDB() {
-    }
 
     public void setFieldOnSite(String field, String value, Function callbackSuccess, Function callbackFailed) {
         HashMap<String, String> map = new HashMap<>();
@@ -141,16 +108,106 @@ public class Model {
         editOnSite(map, callback, callback);
     }
 
-    public void parseResponseGet(String response) {
+
+    public void addToSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "add." + type) {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
+                    return;
+                }
+                parseResponseAdd(response, data);
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
+            }
+        };
+        task.put("data", data);
+        task.execute();
+    }
+
+    public void addToSite(HashMap<String, String> data, final Function callback) {
+        addToSite(data, callback, callback);
     }
 
     public void parseResponseAdd(String response, HashMap<String, String> data) {
     }
 
-    public void parseResponseEdit(String response, HashMap<String, String> data) {
+
+    public void deleteFromSite(int orig_id, final Function callbackSuccess, final Function callbackFailed) {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "delete." + type) {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
+                    return;
+                }
+                parseResponseDelete(response);
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
+            }
+        };
+        task.put("id", orig_id + "");
+        task.execute();
+    }
+
+    public void deleteFromSite(int orig_id, final Function callback) {
+        deleteFromSite(orig_id, callback, callback);
+    }
+
+    public void parseResponseDelete(String response) {
+    }
+
+
+    public void reorderOnSite(final ArrayList arr, final Function callbackSuccess, final Function callbackFailed) {
+        ArrayList<Integer> items = new ArrayList<>();
+        for (Object item : arr) {
+            items.add(((Model) item).original_id);
+        }
+        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder." + type) {
+            @Override
+            protected void onPostExecute(Void voids) {
+                if (status != 0) {
+                    if (callbackFailed != null)
+                        callbackFailed.run();
+                    return;
+                }
+                parseResponseReorder(response, arr);
+                if (callbackSuccess != null)
+                    callbackSuccess.run();
+            }
+        };
+        task.put("what", type);
+        task.put("items", items);
+        task.execute();
+    }
+
+    public void reorderOnSite(ArrayList arr, final Function callback) {
+        reorderOnSite(arr, callback, callback);
     }
 
     public void parseResponseReorder(String response, ArrayList<Model> arr) {
+    }
+
+
+    public HashMap<String, String> getHashMap() {
+        return new HashMap<>();
+    }
+
+    public ArrayList getItems() {
+        return null;
+    }
+
+    public Model getItemById(int id) {
+        return null;
+    }
+
+    public void addToDB() {
+    }
+
+    public void deleteFromDB() {
     }
 
     public ArrayList getFromDataBase(String table) {
@@ -174,6 +231,7 @@ public class Model {
         return obj;
     }
 
+
     public void cleanDB() {
         mWhere = null;
         mOrder = null;
@@ -189,25 +247,6 @@ public class Model {
         return this;
     }
 
-    public void reorderItems(final ArrayList arr, final Function callback) {
-        ArrayList<Integer> items = new ArrayList<>();
-        for (Object item : arr) {
-            items.add(((Model) item).original_id);
-        }
-        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder." + type) {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0)
-                    return;
-                parseResponseReorder(response, arr);
-                if (callback != null)
-                    callback.run();
-            }
-        };
-        task.put("what", type);
-        task.put("items", items);
-        task.execute();
-    }
 
     public String loadIconsFromSite(String icons, String folder) {
         HashMap<String, String> icons_href = new HashMap<>();
@@ -230,6 +269,7 @@ public class Model {
         return new JSONObject(icons_href).toString();
     }
 
+
     public void fillViewForListItem(View view) {
     }
 
@@ -242,6 +282,7 @@ public class Model {
     public HashMap parseEditItem(View containerView) {
         return null;
     }
+
 
     public Model refresh() {
         return getItemById(id);

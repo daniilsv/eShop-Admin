@@ -50,21 +50,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-/*
-        FloatingActionButton fabButton = new FloatingActionButton.Builder(getActivity())
-                .withDrawable(getResources().getDrawable(R.drawable.ic_menu_send))
-                .withButtonColor(Color.MAGENTA)
-                .withGravity(Gravity.BOTTOM | Gravity.END)
-                .withMargins(0, 0, 16, 16)
-                .create();
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<Model> arr = adapter.getItems();
-                new Vendor().reorderItems(arr, null);
-            }
-        });
-*/
+
         return fragment_view;
     }
 
@@ -111,8 +97,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         switch (item.getTitle().toString()) {
             case "+":
                 addVendorItem();
-            case "-":
-                //deleteVendorItem();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -135,11 +120,3 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
 }
-
-/**
- * create Vendor
- * start ItemActivity
- * start EditItem
- * updateOrInsert Item to DB
- */
-//TODO: back to FUTURE!!! Ыы
