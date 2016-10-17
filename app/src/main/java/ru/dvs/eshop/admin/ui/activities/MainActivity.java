@@ -9,7 +9,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -93,30 +92,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Заполняем верхнее меню
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.over_items, menu);
-        return true;
-    }
-
-    //При выборе пункта в верхнем меню
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        /*switch (id) {
-            case R.id.menu_reload:
-                refreshCurFragment();
-                break;
-            case R.id.menu_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-            case R.id.menu_about:
-                startActivity(new Intent(this, AboutActivity.class));
-                break;
-        }*/
-        return true;
-    }
 
     //Обновление текуущего фрагмента
     private void refreshCurFragment() {

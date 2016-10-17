@@ -1,14 +1,16 @@
 package ru.dvs.eshop.admin.ui.fragments;
 
 import android.app.Fragment;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,8 +19,8 @@ import java.util.ArrayList;
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
+import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.adapters.ModelAdapter;
-import ru.dvs.eshop.admin.ui.views.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 import ru.dvs.eshop.admin.utils.Function;
 
@@ -27,13 +29,13 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     SwipeRefreshLayout mSwipeRefreshLayout;
     ModelAdapter adapter;
     RecyclerView recyclerView;
+    ArrayList<Model> vendors;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragment_view = inflater.inflate(R.layout.fragment_vendors, container, false);
 
-
-        ArrayList<Model> vendors = new Vendor().getItems();
+        vendors = new Vendor().getItems();
 
         adapter = new ModelAdapter(getActivity(), vendors, R.layout.row_vendor);
 
@@ -48,7 +50,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
+/*
         FloatingActionButton fabButton = new FloatingActionButton.Builder(getActivity())
                 .withDrawable(getResources().getDrawable(R.drawable.ic_menu_send))
                 .withButtonColor(Color.MAGENTA)
@@ -62,7 +64,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 new Vendor().reorderItems(arr, null);
             }
         });
-
+*/
         return fragment_view;
     }
 
@@ -88,10 +90,56 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     void onItemsLoadComplete() {
-        ArrayList<Model> vendors = new Vendor().getItems();
+        vendors = new Vendor().getItems();
         adapter.setItems(vendors);
         recyclerView.swapAdapter(adapter, false);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.over_items, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getTitle().toString()) {
+            case "+":
+                addVendorItem();
+            case "-":
+                //deleteVendorItem();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void addVendorItem() {
+        Vendor newV = new Vendor();
+        newV.ordering = vendors.size() + 1;
+        newV.addToDB();
+        vendors.add(newV);
+        adapter.setItems(vendors);
+        recyclerView.swapAdapter(adapter, false);
+        mSwipeRefreshLayout.setRefreshing(false);
+
+        adapter.setItemPositionInUse(newV.ordering - 1);
+        Intent intent = new Intent(getActivity(), ItemActivity.class);
+        intent.putExtra("item_type", newV.type);
+        intent.putExtra("item_id", newV.id);
+        intent.putExtra("is_adding", true);
+        startActivity(intent);
+    }
+
 }
+
+/**
+ * create Vendor
+ * start ItemActivity
+ * start EditItem
+ * updateOrInsert Item to DB
+ */
+//TODO: back to FUTURE!!! Ыы
