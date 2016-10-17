@@ -47,7 +47,7 @@ public class Model {
     }
 
     public void getFromSite(HashMap<String, String> additional, final Function callback) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "get") {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "get." + type) {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -57,7 +57,6 @@ public class Model {
                     callback.run();
             }
         };
-        task.put("what", type);
         if (additional != null)
             for (Map.Entry o : additional.entrySet()) {
                 task.put((String) o.getKey(), (String) o.getValue());
@@ -66,7 +65,7 @@ public class Model {
     }
 
     public void editOnSite(final HashMap<String, String> data, final Function callback) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "edit") {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "edit." + type) {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)
@@ -138,7 +137,7 @@ public class Model {
         for (Object item : arr) {
             items.add(((Model) item).original_id);
         }
-        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder") {
+        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder." + type) {
             @Override
             protected void onPostExecute(Void voids) {
                 if (status != 0)

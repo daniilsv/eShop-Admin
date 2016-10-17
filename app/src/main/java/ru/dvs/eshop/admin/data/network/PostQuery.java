@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -14,6 +13,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
     protected int status = 0;
     protected String response = "";
     private String mToken;
-    private JSONObject mJsonObj;
+    private HashMap mJsonObj;
     private String mSite;
     private String mController;
     private String mMethod;
@@ -38,8 +39,8 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
         mToken = token;
         mController = controller;
         mMethod = method;
-        mJsonObj = new JSONObject();
-        put("token", mToken);
+        mJsonObj = new HashMap();
+        put("api_key", mToken);
     }
 
     public PostQuery(String site, String controller, String method) {
@@ -47,28 +48,19 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
         mToken = null;
         mController = controller;
         mMethod = method;
-        mJsonObj = new JSONObject();
+        mJsonObj = new HashMap();
     }
 
     public void put(String a, String b) {
-        try {
-            mJsonObj.put(a, b);
-        } catch (JSONException ignored) {
-        }
+        mJsonObj.put(a, b);
     }
 
     public void put(String a, Map b) {
-        try {
-            mJsonObj.put(a, new JSONObject(b));
-        } catch (JSONException ignored) {
-        }
+        mJsonObj.put(a, new JSONObject(b));
     }
 
     public void put(String a, List b) {
-        try {
-            mJsonObj.put(a, new JSONArray(b));
-        } catch (JSONException ignored) {
-        }
+        mJsonObj.put(a, new JSONArray(b));
     }
 
     @Override
@@ -83,18 +75,18 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
         }
         String result;
         try {
-            result = sendPOST(mSite + "/api/" + mController + "/" + mMethod, mJsonObj);
-            JSONObject node = new JSONObject(result);
-            status = node.getInt("status");
-            response = node.getString("response");
+            result = sendPOST(mSite + "/api/method/" + mController + "." + mMethod, mJsonObj);
+            if (result.charAt(2) == 'r') {
+                status = 0;
+                response = result.subSequence(12, result.length() - 1).toString();
+            } else if (result.charAt(2) == 'e') {
+                status = 1;
+                response = result.subSequence(9, result.length() - 1).toString();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             status = 1;
             response = "-2";//Ошибка подключения
-        } catch (JSONException e) {
-            e.printStackTrace();
-            status = 1;
-            response = "-3";//Ошибка первичного парсинга ответа
         }
         if (response.equals("null")) {
             status = 1;
@@ -164,7 +156,7 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
     }
 
     //Посылаем POST запрос на сайт в текущем потоке
-    private String sendPOST(String url, JSONObject params) throws IOException {
+    private String sendPOST(String url, HashMap<String, Object> params) throws IOException {
         url = (url.contains("https://") ? "https://" : "http://") + url.replaceAll("\\s+|http://|https://", "");
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -172,9 +164,17 @@ public class PostQuery extends AsyncTask<Void, Void, Void> {
         con.setRequestProperty("User-Agent", "Mozilla/5.0");
 
         con.setDoOutput(true);
-        String str = params.toString();
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<?, ?> entry : params.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append("&");
+            }
+            sb.append(String.format("%s=%s", URLEncoder.encode(entry.getKey().toString(), "UTF-8"),
+                    URLEncoder.encode(entry.getValue().toString(), "UTF-8")));
+        }
         OutputStream os = con.getOutputStream();
-        os.write(("data=" + str).getBytes());
+        os.write(sb.toString().getBytes());
+
         os.flush();
 
         int responseCode = con.getResponseCode();

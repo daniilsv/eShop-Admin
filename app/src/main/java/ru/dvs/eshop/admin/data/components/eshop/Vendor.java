@@ -81,7 +81,7 @@ public class Vendor extends Model {
     public void parseResponseGet(String response) {
         try {
             //Распарсиваем полученную JSON-строку
-            JSONObject node_root = new JSONObject(response);
+            JSONObject node_root = new JSONObject(response).getJSONObject("items");
             Iterator<String> keys = node_root.keys();
             if (keys == null)
                 return;
