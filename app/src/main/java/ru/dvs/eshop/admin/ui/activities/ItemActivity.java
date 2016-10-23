@@ -32,8 +32,10 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
+            this.finish();
             super.onBackPressed();
         } else {
+            this.finish();
             getFragmentManager().popBackStack();
         }
     }
