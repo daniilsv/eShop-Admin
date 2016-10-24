@@ -58,6 +58,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void onResume() {
         super.onResume();
         adapter.updateItemInUse();
+        onRefresh();
     }
 
     @Override
