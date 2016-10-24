@@ -31,7 +31,7 @@ public class ItemViewFragment extends Fragment {
     public void fillData() {
         if (args == null)
             args = getArguments();
-
+        insertPointView.removeAllViews();
         String type = args.getString("item_type", "-1");
         int itemId = args.getInt("item_id", -1);
         switch (type) {

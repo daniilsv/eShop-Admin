@@ -1,7 +1,9 @@
 package ru.dvs.eshop.admin.ui.activities;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +17,7 @@ import android.view.View;
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
+import ru.dvs.eshop.admin.utils.Permissions;
 
 /**
  * Главная активность приложения
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Permissions.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
     }
 
     //При возвращении из другой активности
@@ -101,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
         //if (curFragment instanceof InfoFragment) {
         //    infoFragment.refresh();
         // }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Core.getInstance().setActivity(this);
     }
 
     //При выборе фрагмента в левом меню

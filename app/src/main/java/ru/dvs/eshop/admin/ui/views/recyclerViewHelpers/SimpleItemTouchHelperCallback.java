@@ -21,6 +21,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
+import ru.dvs.eshop.admin.utils.Function;
+
 /**
  * An implementation of {@link ItemTouchHelper.Callback} that enables basic drag & drop and
  * swipe-to-dismiss. Drag events are automatically started by an item long-press.<br/>
@@ -38,11 +40,13 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private final ItemTouchHelperAdapter mAdapter;
     private boolean mIsDragEnabled = false;
     private boolean mIsSwipeEnabled = false;
+    private Function mOnMovedFunction = null;
 
-    public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter, boolean isDragEnabled, boolean isSwipeEnabled) {
+    public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter, boolean isDragEnabled, boolean isSwipeEnabled, Function onMovedFunction) {
         mAdapter = adapter;
         mIsDragEnabled = isDragEnabled;
         mIsSwipeEnabled = isSwipeEnabled;
+        mOnMovedFunction = onMovedFunction;
     }
 
     @Override
@@ -77,6 +81,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
         // Notify the adapter of the move
         mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+        if (mOnMovedFunction != null) mOnMovedFunction.run();
         return true;
     }
 

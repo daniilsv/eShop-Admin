@@ -25,6 +25,8 @@ public class Model {
     public int id;
     public int original_id;
     public boolean is_enabled;
+    protected View editView;
+    protected String imageToSave;
     private String mWhere = null;
     private String mOrder = null;
 
@@ -277,6 +279,9 @@ public class Model {
     }
 
     public void fillViewForEditItem(View insertPointView) {
+    }
+
+    public void setImageByActivity(String imageUri) {
     }
 
     public HashMap parseEditItem(View containerView) {

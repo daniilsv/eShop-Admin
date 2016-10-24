@@ -21,6 +21,7 @@ import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.adapters.ModelAdapter;
+import ru.dvs.eshop.admin.ui.views.floatingAction.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 import ru.dvs.eshop.admin.utils.Function;
 
@@ -30,6 +31,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     ModelAdapter adapter;
     RecyclerView recyclerView;
     ArrayList<Model> vendors;
+    private FloatingActionButton mSaveButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,8 +48,24 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) fragment_view.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false);
+        mSaveButton = (FloatingActionButton) fragment_view.findViewById(R.id.save_position_button);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Vendor().reorderOnSite(adapter.getItems(), new Function() {
+                    @Override
+                    public void run() {
+                        mSaveButton.setVisibility(View.GONE);
+                    }
+                }, null);
+            }
+        });
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, true, false, new Function() {
+            @Override
+            public void run() {
+                mSaveButton.setVisibility(View.VISIBLE);
+            }
+        });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 

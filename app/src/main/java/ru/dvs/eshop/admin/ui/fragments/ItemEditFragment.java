@@ -102,6 +102,10 @@ public class ItemEditFragment extends Fragment {
         return fragment_view;
     }
 
+    public void onActivityImageResult(String imageUri) {
+        item.setImageByActivity(imageUri);
+    }
+
     public void setIsAdding(boolean isAdding) {
         mIsAdding = isAdding;
     }

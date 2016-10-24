@@ -1,6 +1,7 @@
 package ru.dvs.eshop.admin.data.components.eshop;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputEditText;
@@ -22,6 +23,8 @@ import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.components.Model;
+import ru.dvs.eshop.admin.data.network.FileSendQuery;
+import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 
 /**
  * Производитель
@@ -57,6 +60,10 @@ public class Vendor extends Model {
         url = c.getString(c.getColumnIndex("url"));
         ordering = c.getInt(c.getColumnIndex("ordering"));
         String icon = c.getString(c.getColumnIndex("icon"));
+        loadIcons(icon);
+    }
+
+    private void loadIcons(String icon) {
         icons_href = new HashMap<>();
         icons = new HashMap<>();
         try {
@@ -192,13 +199,32 @@ public class Vendor extends Model {
     @Override
     public void fillViewForEditItem(View insertPointView) {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = vi.inflate(R.layout.edit_vendor, null);
+        editView = vi.inflate(R.layout.edit_vendor, null);
 
-        ((TextInputEditText) v.findViewById(R.id.edit_vendor_title)).setText(title);
-        ((TextInputEditText) v.findViewById(R.id.edit_vendor_description)).setText(description);
-        ((TextInputEditText) v.findViewById(R.id.edit_vendor_url)).setText(url);
+        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_title)).setText(title);
+        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_description)).setText(description);
+        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_url)).setText(url);
 
-        ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(icons.get("normal"));
+
+        editView.findViewById(R.id.button_select_vendor_image).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                Core.getInstance().activity.startActivityForResult(Intent.createChooser(intent,
+                        "Select Picture"), ItemActivity.EDIT_IMAGE_SELECT);
+            }
+        });
+
+        ((ViewGroup) insertPointView).addView(editView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    @Override
+    public void setImageByActivity(String imageUri) {
+        imageToSave = imageUri;
+        Drawable drawable = Drawable.createFromPath(imageToSave);
+        ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(drawable);
     }
 
     @Override
@@ -209,6 +235,16 @@ public class Vendor extends Model {
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
         ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());
+        if (imageToSave != null)
+            new FileSendQuery(site.host, controller, imageToSave, type, original_id, "icon") {
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("icon", loadIconsFromSite(response, "vendors/" + original_id));
+                    DB.insertOrUpdate("com_eshop_vendors", "original_id=" + original_id, map);
+                    loadIcons(response);
+                }
+            }.execute();
         return ret;
     }
 }

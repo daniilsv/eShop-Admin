@@ -9,7 +9,6 @@ import java.io.File;
 
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.Site;
-import ru.dvs.eshop.admin.ui.activities.MainActivity;
 
 /**
  * Ядро системы.
@@ -73,8 +72,6 @@ public class Core {
 
     //Устанавливает текущее активити
     public void setActivity(Activity _activity) {
-        if (activity != null && activity instanceof MainActivity)
-            return;
         activity = _activity;
         context = _activity;
     }

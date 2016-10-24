@@ -79,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
 
-
         Core.getInstance().setActivity(this);
 
         site = Preferences.getString("host");
@@ -226,4 +225,9 @@ public class LoginActivity extends AppCompatActivity {
             super.onBackPressed();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Core.getInstance().setActivity(this);
+    }
 }
