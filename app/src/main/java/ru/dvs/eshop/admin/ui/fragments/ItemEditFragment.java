@@ -78,6 +78,7 @@ public class ItemEditFragment extends Fragment {
                     item.addToSite(map, new Function() {
                         @Override
                         public void run() {
+                            item.uploadIcon();
                             Core.makeToast("Inserted", false);
                             ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
                                     setDuration(500).
@@ -89,6 +90,7 @@ public class ItemEditFragment extends Fragment {
                     item.editOnSite(map, new Function() {
                         @Override
                         public void run() {
+                            item.uploadIcon();
                             Core.makeToast("Updated", false);
                             ObjectAnimator.ofFloat(fragment_view, "alpha", 1, 0).
                                     setDuration(500).

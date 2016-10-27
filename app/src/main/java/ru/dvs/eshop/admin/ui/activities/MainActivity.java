@@ -16,6 +16,7 @@ import android.view.View;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.ui.fragments.PaymentTypesFragment;
 import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
 import ru.dvs.eshop.admin.utils.Permissions;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment curFragment;
 
     private VendorsFragment vendorsFragment = null;
+    private PaymentTypesFragment paymentTypeFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+                !Permissions.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Permissions.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
@@ -125,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.menu_vendors:
                     curFragment = (vendorsFragment != null) ? vendorsFragment : (vendorsFragment = new VendorsFragment());
+                    break;
+                case R.id.menu_payment_methods:
+                    curFragment = (paymentTypeFragment != null) ? paymentTypeFragment : (paymentTypeFragment = new PaymentTypesFragment());
                     break;
             }
             //Устанавливаем новый фрагмент

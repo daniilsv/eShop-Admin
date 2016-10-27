@@ -1,5 +1,9 @@
 package ru.dvs.eshop.admin.ui.fragments;
 
+/**
+ * Created by MSI1 on 28.10.2016.
+ */
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +22,7 @@ import java.util.ArrayList;
 
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.data.components.Model;
+import ru.dvs.eshop.admin.data.components.eshop.PaymentType;
 import ru.dvs.eshop.admin.data.components.eshop.Vendor;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.adapters.ModelAdapter;
@@ -25,21 +30,21 @@ import ru.dvs.eshop.admin.ui.views.floatingAction.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.SimpleItemTouchHelperCallback;
 import ru.dvs.eshop.admin.utils.Function;
 
-public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class PaymentTypesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     SwipeRefreshLayout mSwipeRefreshLayout;
     ModelAdapter adapter;
     RecyclerView recyclerView;
-    ArrayList<Model> vendors;
+    ArrayList<Model> paymentTypes;
     private FloatingActionButton mSaveButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragment_view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        vendors = new Vendor().getItems();
+        paymentTypes = new PaymentType().getItems();
 
-        adapter = new ModelAdapter(getActivity(), vendors, R.layout.row_vendor);
+        adapter = new ModelAdapter(getActivity(), paymentTypes, R.layout.row_payment_type);
 
         recyclerView = (RecyclerView) fragment_view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -95,8 +100,8 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     void onItemsLoadComplete() {
-        vendors = new Vendor().getItems();
-        adapter.setItems(vendors);
+        paymentTypes = new PaymentType().getItems();
+        adapter.setItems(paymentTypes);
         recyclerView.swapAdapter(adapter, false);
         mSwipeRefreshLayout.setRefreshing(false);
     }
@@ -115,18 +120,18 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getTitle().toString()) {
             case "+":
-                addVendorItem();
+                addPaymentTypeItem();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void addVendorItem() {
-        Vendor newV = new Vendor();
-        newV.ordering = vendors.size() + 1;
+    private void addPaymentTypeItem() {
+        PaymentType newV = new PaymentType();
+        newV.ordering = paymentTypes.size() + 1;
         newV.addToDB();
-        vendors.add(newV);
-        adapter.setItems(vendors);
+        paymentTypes.add(newV);
+        adapter.setItems(paymentTypes);
         recyclerView.swapAdapter(adapter, false);
         mSwipeRefreshLayout.setRefreshing(false);
 

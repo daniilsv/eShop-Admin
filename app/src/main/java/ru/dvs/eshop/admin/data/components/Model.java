@@ -288,6 +288,8 @@ public class Model {
         return null;
     }
 
+    public void uploadIcon() {
+    }
 
     public Model refresh() {
         return getItemById(id);

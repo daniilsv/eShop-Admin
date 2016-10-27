@@ -27,37 +27,42 @@ import ru.dvs.eshop.admin.data.network.FileSendQuery;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 
 /**
- * Производитель
+ * Created by MSI1 on 26.10.2016.
  */
-public class Vendor extends Model {
+
+public class PaymentType extends Model {
+
     public String title;
     public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
     public String description;
     public int ordering; //Порядок вывода(сортировка)
-    public String url;
+    public String name;
+    public String options;
     HashMap<String, String> icons_href; //Ссылки на иконки
     //Иконки = normal, big, small
 
-    public Vendor() {
-        super("eshop", "vendor");
+    public PaymentType() {
+        super("eshop", "payment_type");
         title = "";
         description = "";
         is_enabled = true;
         ordering = -1;
-        url = "";
+        name = "";
+        options = "";
         icons_href = new HashMap<>();
         icons = new HashMap<>();
 
     }
 
-    public Vendor(Cursor c) {
-        super("eshop", "vendor");
+    public PaymentType(Cursor c) {
+        super("eshop", "payment_type");
         id = c.getInt(c.getColumnIndex("id"));
         original_id = c.getInt(c.getColumnIndex("original_id"));
         is_enabled = c.getInt(c.getColumnIndex("is_enabled")) == 1;
         title = c.getString(c.getColumnIndex("title"));
         description = c.getString(c.getColumnIndex("description"));
-        url = c.getString(c.getColumnIndex("url"));
+        name = c.getString(c.getColumnIndex("name"));
+        options = c.getString(c.getColumnIndex("options"));
         ordering = c.getInt(c.getColumnIndex("ordering"));
         String icon = c.getString(c.getColumnIndex("icon"));
         loadIcons(icon);
@@ -75,7 +80,7 @@ public class Vendor extends Model {
                     String href = icon_node.getString(key);
                     icons_href.put(key, href);
                     String tmp[] = href.split("/");
-                    Drawable d = Drawable.createFromPath(Core.getStorageDir() + "/icons/vendors/" + original_id + "/" + tmp[tmp.length - 1]);
+                    Drawable d = Drawable.createFromPath(Core.getStorageDir() + "/icons/payment_types/" + original_id + "/" + tmp[tmp.length - 1]);
                     icons.put(key, d);
                 }
         } catch (JSONException ignored) {
@@ -88,30 +93,31 @@ public class Vendor extends Model {
         map.put("is_enabled", (is_enabled ? 1 : 0) + "");
         map.put("title", title);
         map.put("description", description);
-        map.put("url", url);
+        map.put("name", name);
+        map.put("options", options);
         map.put("ordering", ordering + "");
         map.put("icon", new JSONObject(icons_href).toString());
         return map;
     }
 
     public void addToDB() {
-        id = (int) DB.insert("com_eshop_vendors", getHashMap());
+        id = (int) DB.insert("com_eshop_payment_types", getHashMap());
     }
 
     public void deleteFromDB() {
-        DB.delete("com_eshop_vendors", "id=" + id, null);
+        DB.delete("com_eshop_payment_types", "id=" + id, null);
     }
 
     @Override
     public ArrayList getItems() {
         return orderBy("ordering", "ASC").
-                getFromDataBase("eshop_vendors");
+                getFromDataBase("eshop_payment_types");
     }
 
 
     @Override
     public Model getItemById(int id) {
-        return (Vendor) getByItemId("eshop_vendors", id);
+        return (Vendor) getByItemId("eshop_payment_types", id);
     }
 
     @Override
@@ -133,12 +139,13 @@ public class Vendor extends Model {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("original_id", item.getInt("id") + "");
                 map.put("is_enabled", item.getInt("is_enabled") + "");
+                map.put("ordering", item.getString("ordering") + "");
+                map.put("name", item.getString("name") + "");
                 map.put("title", item.getString("title") + "");
-                map.put("icon", loadIconsFromSite(item.getString("icon"), "vendors/" + item.getInt("id")));
                 map.put("description", item.getString("description") + "");
-                map.put("url", item.getString("url") + "");
-                map.put("ordering", item.getInt("ordering") + "");
-                DB.insertOrUpdate("com_eshop_vendors", "original_id=" + item.getInt("id"), map);
+                map.put("icon", loadIconsFromSite(item.getString("icon"), "payment_types/" + item.getInt("id")));
+                map.put("options", item.getString("options") + "");
+                DB.insertOrUpdate("com_eshop_payment_types", "original_id=" + item.getInt("id"), map);
                 original_ids.remove(item.getInt("id"));
             }
         } catch (JSONException e) {
@@ -147,7 +154,7 @@ public class Vendor extends Model {
         }
         Set<Integer> keys = original_ids.keySet();
         for (int orig_id : keys) {
-            DB.delete("com_eshop_vendors", "original_id=" + orig_id, null);
+            DB.delete("com_eshop_payment_types", "original_id=" + orig_id, null);
         }
     }
 
@@ -157,22 +164,21 @@ public class Vendor extends Model {
         for (Object item : arr) {
             HashMap<String, String> map = new HashMap<>();
             map.put("ordering", ++i + "");
-            DB.update("com_eshop_vendors", ((Model) item).id, map);
+            DB.update("com_eshop_payment_types", ((Model) item).id, map);
         }
     }
 
     public void parseResponseEdit(String response, HashMap<String, String> data) {
-        DB.update("com_eshop_vendors", id, data);
+        DB.update("com_eshop_payment_types", id, data);
     }
 
     public void parseResponseAdd(String response, HashMap<String, String> data) {
-        original_id = Integer.parseInt(response.substring(1, response.length() - 1));
-        DB.update("com_eshop_vendors", id, data);
+        DB.update("com_eshop_payment_types", id, data);
     }
 
     @Override
-    protected Vendor newInstance(Cursor c) {
-        return new Vendor(c);
+    protected PaymentType newInstance(Cursor c) {
+        return new PaymentType(c);
     }
 
     public void fillViewForListItem(View view) {
@@ -190,25 +196,25 @@ public class Vendor extends Model {
     @Override
     public void fillViewForReadItem(View insertPointView) {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = vi.inflate(R.layout.view_vendor, null);
-        ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
-        ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
-        ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
+        View v = vi.inflate(R.layout.view_payment_type, null);
+        ((TextView) v.findViewById(R.id.view_payment_type_title)).setText(title);
+        ((TextView) v.findViewById(R.id.view_payment_type_description)).setText(description);
+        ((TextView) v.findViewById(R.id.view_payment_type_options)).setText(options);
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
     public void fillViewForEditItem(View insertPointView) {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        editView = vi.inflate(R.layout.edit_vendor, null);
+        editView = vi.inflate(R.layout.edit_payment_type, null);
 
-        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_title)).setText(title);
-        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_description)).setText(description);
-        ((TextInputEditText) editView.findViewById(R.id.edit_vendor_url)).setText(url);
+        ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_title)).setText(title);
+        ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_description)).setText(description);
+        ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_options)).setText(options);
 
-        ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(icons.get("normal"));
+        ((ImageView) editView.findViewById(R.id.edit_payment_type_image)).setImageDrawable(icons.get("normal"));
 
-        editView.findViewById(R.id.button_select_vendor_image).setOnClickListener(new View.OnClickListener() {
+        editView.findViewById(R.id.button_select_payment_type_image).setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
@@ -225,7 +231,7 @@ public class Vendor extends Model {
     public void setImageByActivity(String imageUri) {
         imageToSave = imageUri;
         Drawable drawable = Drawable.createFromPath(imageToSave);
-        ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(drawable);
+        ((ImageView) editView.findViewById(R.id.edit_payment_type_image)).setImageDrawable(drawable);
     }
 
     @Override
@@ -233,31 +239,21 @@ public class Vendor extends Model {
         HashMap ret = new HashMap();
         ret.put("ordering", ordering);
         ret.put("is_enabled", 1);
-        ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
-        ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
-        ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());
-        if (imageToSave != null)
-            new FileSendQuery(site.host, controller, imageToSave, type, original_id, "icon") {
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put("icon", loadIconsFromSite(response, "vendors/" + original_id));
-                    DB.insertOrUpdate("com_eshop_vendors", "original_id=" + original_id, map);
-                    loadIcons(response);
-                }
-            }.execute();
+        ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_title)).getText().toString());
+        ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_description)).getText().toString());
+        ret.put("options", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_options)).getText().toString());
+
         return ret;
     }
 
     public void uploadIcon() {
-
         if (imageToSave != null)
             new FileSendQuery(site.host, controller, imageToSave, type, original_id, "icon") {
                 @Override
                 protected void onPostExecute(Void aVoid) {
                     HashMap<String, String> map = new HashMap<>();
-                    map.put("icon", loadIconsFromSite(response, "vendors/" + original_id));
-                    DB.insertOrUpdate("com_eshop_vendors", "original_id=" + original_id, map);
+                    map.put("icon", loadIconsFromSite(response, "payment_types/" + original_id));
+                    DB.insertOrUpdate("com_eshop_payment_types", "original_id=" + original_id, map);
                     loadIcons(response);
                 }
             }.execute();
