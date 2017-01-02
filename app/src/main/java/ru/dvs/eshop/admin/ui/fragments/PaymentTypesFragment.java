@@ -74,6 +74,7 @@ public class PaymentTypesFragment extends Fragment implements SwipeRefreshLayout
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+
         return fragment_view;
     }
 
@@ -142,5 +143,6 @@ public class PaymentTypesFragment extends Fragment implements SwipeRefreshLayout
         intent.putExtra("is_adding", true);
         startActivity(intent);
     }
+
 
 }

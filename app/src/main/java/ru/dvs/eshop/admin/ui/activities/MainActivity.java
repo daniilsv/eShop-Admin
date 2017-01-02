@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
         }
         */
     }
-
     //При нажатии кнопки назад
     @Override
     public void onBackPressed() {

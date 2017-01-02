@@ -199,7 +199,7 @@ public class PaymentType extends Model {
         View v = vi.inflate(R.layout.view_payment_type, null);
         ((TextView) v.findViewById(R.id.view_payment_type_title)).setText(title);
         ((TextView) v.findViewById(R.id.view_payment_type_description)).setText(description);
-        ((TextView) v.findViewById(R.id.view_payment_type_options)).setText(options);
+        //TODO:((TextView) v.findViewById(R.id.view_payment_type_options)).setText(options);
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
@@ -210,7 +210,7 @@ public class PaymentType extends Model {
 
         ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_title)).setText(title);
         ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_description)).setText(description);
-        ((TextInputEditText) editView.findViewById(R.id.edit_payment_type_options)).setText(options);
+        //TODO:((TextInputEditText) editView.findViewById(R.id.edit_payment_type_options)).setText(options);
 
         ((ImageView) editView.findViewById(R.id.edit_payment_type_image)).setImageDrawable(icons.get("normal"));
 
@@ -241,7 +241,7 @@ public class PaymentType extends Model {
         ret.put("is_enabled", 1);
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_description)).getText().toString());
-        ret.put("options", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_options)).getText().toString());
+        //ret.put("options", ((TextInputEditText) containerView.findViewById(R.id.edit_payment_type_options)).getText().toString());
 
         return ret;
     }

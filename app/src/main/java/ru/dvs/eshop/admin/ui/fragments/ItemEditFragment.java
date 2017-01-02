@@ -2,13 +2,16 @@ package ru.dvs.eshop.admin.ui.fragments;
 
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -20,10 +23,12 @@ import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.utils.Function;
 
 public class ItemEditFragment extends Fragment {
+    private final int IDD_THREE_BUTTONS = 0;
     Toolbar toolbar;
     ViewGroup insertPointView;
     View fragment_view;
     Model item;
+    AlertDialog.Builder ad;
     private boolean mIsAdding = false;
     private ItemViewFragment mitemViewFragment;
 
@@ -58,6 +63,22 @@ public class ItemEditFragment extends Fragment {
                     getActivity().finish();
                 }
                 getActivity().onBackPressed();
+            }
+        });
+        ad = new AlertDialog.Builder(getActivity().getBaseContext());
+        ad.setTitle("titile");  // заголовок
+        ad.setMessage("message"); // сообщение
+        ad.setNegativeButton("Button", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                Toast.makeText(getActivity().getBaseContext(), "Возможно вы правы", Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+        ad.setCancelable(true);
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Toast.makeText(getActivity().getBaseContext(), "Вы ничего не выбрали",
+                        Toast.LENGTH_LONG).show();
             }
         });
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -101,8 +122,17 @@ public class ItemEditFragment extends Fragment {
 
             }
         });
+
+//        Button addOptions = (Button) fragment_view.findViewById(R.id.button_add_element_payment_type);
+//        addOptions.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ad.show();
+//            }
+//        });
         return fragment_view;
     }
+
 
     public void onActivityImageResult(String imageUri) {
         item.setImageByActivity(imageUri);

@@ -2,15 +2,8 @@ package ru.dvs.eshop.admin.data.components;
 
 import android.database.Cursor;
 import android.view.View;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
 import ru.dvs.eshop.admin.data.Site;
@@ -18,17 +11,25 @@ import ru.dvs.eshop.admin.data.network.FileGetQuery;
 import ru.dvs.eshop.admin.data.network.PostQuery;
 import ru.dvs.eshop.admin.utils.Function;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public class Model {
     public final String controller;
     public final String type;
     public final Site site;
     public int id;
     public int original_id;
+    public int parent_id;
+    public int level;
     public boolean is_enabled;
     protected View editView;
     protected String imageToSave;
     private String mWhere = null;
     private String mOrder = null;
+    private ArrayList<Model> mTmpArray = new ArrayList<>();
 
     public Model(String _controller, String _type) {
         controller = _controller;
@@ -39,7 +40,6 @@ public class Model {
     protected Object newInstance(Cursor c) {
         return null;
     }
-
 
     public void getFromSite(HashMap<String, String> additional, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "get." + type) {
@@ -69,7 +69,6 @@ public class Model {
     public void parseResponseGet(String response) {
     }
 
-
     public void editOnSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "edit." + type) {
             @Override
@@ -97,7 +96,6 @@ public class Model {
     public void parseResponseEdit(String response, HashMap<String, String> data) {
     }
 
-
     public void setFieldOnSite(String field, String value, Function callbackSuccess, Function callbackFailed) {
         HashMap<String, String> map = new HashMap<>();
         map.put(field, value);
@@ -109,7 +107,6 @@ public class Model {
         map.put(field, value);
         editOnSite(map, callback, callback);
     }
-
 
     public void addToSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "add." + type) {
@@ -136,7 +133,6 @@ public class Model {
     public void parseResponseAdd(String response, HashMap<String, String> data) {
     }
 
-
     public void deleteFromSite(int orig_id, final Function callbackSuccess, final Function callbackFailed) {
         PostQuery task = new PostQuery(site.host, site.token, controller, "delete." + type) {
             @Override
@@ -161,7 +157,6 @@ public class Model {
 
     public void parseResponseDelete(String response) {
     }
-
 
     public void reorderOnSite(final ArrayList arr, final Function callbackSuccess, final Function callbackFailed) {
         ArrayList<Integer> items = new ArrayList<>();
@@ -192,7 +187,6 @@ public class Model {
 
     public void parseResponseReorder(String response, ArrayList<Model> arr) {
     }
-
 
     public HashMap<String, String> getHashMap() {
         return new HashMap<>();
@@ -233,7 +227,6 @@ public class Model {
         return obj;
     }
 
-
     public void cleanDB() {
         mWhere = null;
         mOrder = null;
@@ -248,7 +241,6 @@ public class Model {
         mOrder = "`" + key + "` " + order;
         return this;
     }
-
 
     public String loadIconsFromSite(String icons, String folder) {
         HashMap<String, String> icons_href = new HashMap<>();
@@ -269,6 +261,41 @@ public class Model {
             e.printStackTrace();
         }
         return new JSONObject(icons_href).toString();
+    }
+
+    protected ArrayList<Model> makeTypeChildsTree(HashMap<Integer, Model> items) {
+
+        HashMap<Integer, ArrayList<Model>> parent_items = new HashMap<>();
+
+        for (int id : items.keySet()) {
+            Model item = items.get(id);
+            if (parent_items.get(item.parent_id) == null) {
+                ArrayList<Model> t = new ArrayList<>();
+                t.add(item);
+                parent_items.put(item.parent_id, t);
+            } else {
+                ArrayList<Model> t = parent_items.get(item.parent_id);
+                t.add(item);
+                parent_items.put(item.parent_id, t);
+            }
+        }
+        fillTypeChildBranch(parent_items, 0, 0);
+        ArrayList<Model> ret = mTmpArray;
+        mTmpArray = new ArrayList<>();
+
+        return ret;
+
+    }
+
+    private void fillTypeChildBranch(HashMap<Integer, ArrayList<Model>> parent_items, int cur_id, int level) {
+        if (!parent_items.containsKey(cur_id)) {
+            return;
+        }
+        for (Model p_c : parent_items.get(cur_id)) {
+            p_c.level = level;
+            mTmpArray.add(p_c);
+            fillTypeChildBranch(parent_items, p_c.original_id, level + 1);
+        }
     }
 
 

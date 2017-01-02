@@ -145,7 +145,7 @@ public class DB {
                     "tpl TEXT DEFAULT NULL);" +
                     "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_categories (id, original_id);"
             );
-            ///////////////////
+            ///////////////////Мы сделали категорию шаблон категорий, чтобы когда вы кодили категорию... всё, договорились, теперь всё ясно!(нет)
             Log.d(LOG_TAG, "--- Create com_eshop_chars");
             db.execSQL("CREATE TABLE com_eshop_chars (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -221,6 +221,7 @@ public class DB {
             db.execSQL("CREATE TABLE com_eshop_vendors (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "original_id INTEGER NOT NULL," +
+                    "parent_id INTEGER NOT NULL," +
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT DEFAULT NULL," +
                     "icon TEXT," +
