@@ -8,7 +8,10 @@ import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -26,6 +29,7 @@ import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.network.FileSendQuery;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 
+
 /**
  * Производитель
  */
@@ -33,16 +37,19 @@ public class Vendor extends Model {
     public String title;
     public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
     public String description;
+    public int parent_id;
     public int ordering; //Порядок вывода(сортировка)
     public String url;
     HashMap<String, String> icons_href; //Ссылки на иконки
     //Иконки = normal, big, small
+    private int position_parent_vendor = 0;
 
     public Vendor() {
         super("eshop", "vendor");
         title = "";
         description = "";
         is_enabled = true;
+        parent_id = 0;
         ordering = -1;
         url = "";
         icons_href = new HashMap<>();
@@ -54,6 +61,7 @@ public class Vendor extends Model {
         super("eshop", "vendor");
         id = c.getInt(c.getColumnIndex("id"));
         original_id = c.getInt(c.getColumnIndex("original_id"));
+        parent_id = c.getInt(c.getColumnIndex("parent_id"));
         is_enabled = c.getInt(c.getColumnIndex("is_enabled")) == 1;
         title = c.getString(c.getColumnIndex("title"));
         description = c.getString(c.getColumnIndex("description"));
@@ -85,6 +93,7 @@ public class Vendor extends Model {
     public HashMap<String, String> getHashMap() {
         HashMap<String, String> map = new HashMap<>();
         map.put("original_id", original_id + "");
+        map.put("parent_id", parent_id + "");
         map.put("is_enabled", (is_enabled ? 1 : 0) + "");
         map.put("title", title);
         map.put("description", description);
@@ -132,6 +141,7 @@ public class Vendor extends Model {
                 JSONObject item = node_root.getJSONObject(keys.next());
                 HashMap<String, String> map = new HashMap<>();
                 map.put("original_id", item.getInt("id") + "");
+                map.put("parent_id", item.getInt("parent_id") + "");
                 map.put("is_enabled", item.getInt("is_enabled") + "");
                 map.put("title", item.getString("title") + "");
                 map.put("icon", loadIconsFromSite(item.getString("icon"), "vendors/" + item.getInt("id")));
@@ -192,6 +202,7 @@ public class Vendor extends Model {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = vi.inflate(R.layout.view_vendor, null);
         ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
+        ((TextView) v.findViewById(R.id.view_vendor_parent_id)).setText(((Vendor) getItems().get(parent_id)).title);
         ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
         ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -202,10 +213,34 @@ public class Vendor extends Model {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         editView = vi.inflate(R.layout.edit_vendor, null);
 
+        //TODO: data -> vendor_array
+        ArrayAdapter<Vendor> adapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, getItems());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        final Spinner spinner = (Spinner) editView.findViewById(R.id.edit_vendor_parent_id);
+        spinner.setAdapter(adapter);
+        // заголовок
+        spinner.setPrompt("Title");
+        // выделяем элемент
+        spinner.setSelection(2);
+        // устанавливаем обработчик нажатия
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                position_parent_vendor = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+
+
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_title)).setText(title);
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_description)).setText(description);
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_url)).setText(url);
-
         ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(icons.get("normal"));
 
         editView.findViewById(R.id.button_select_vendor_image).setOnClickListener(new View.OnClickListener() {
@@ -228,11 +263,15 @@ public class Vendor extends Model {
         ((ImageView) editView.findViewById(R.id.edit_vendor_image)).setImageDrawable(drawable);
     }
 
+    public String toString() {
+        return title;
+    }
     @Override
     public HashMap parseEditItem(View containerView) {
         HashMap ret = new HashMap();
         ret.put("ordering", ordering);
         ret.put("is_enabled", 1);
+        ret.put("parent_id", ((Model) getItems().get(position_parent_vendor)).original_id + "");
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
         ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());
