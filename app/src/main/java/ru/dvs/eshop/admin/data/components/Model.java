@@ -245,6 +245,8 @@ public class Model {
     public String loadIconsFromSite(String icons, String folder) {
         HashMap<String, String> icons_href = new HashMap<>();
         try {
+            if (icons.length() == 2)
+                return new JSONObject(icons_href).toString();
             JSONObject icon_node = new JSONObject(icons);
             Iterator<String> icon_keys = icon_node.keys();
             if (icon_keys != null)
