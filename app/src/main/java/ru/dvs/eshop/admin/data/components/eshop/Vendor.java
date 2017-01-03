@@ -8,20 +8,12 @@ import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.DB;
@@ -29,20 +21,25 @@ import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.network.FileSendQuery;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 
 /**
  * Производитель
  */
 public class Vendor extends Model {
+    public static HashMap<Integer, Vendor> items = new HashMap<>();
+    //Иконки = normal, big, small
+    private static ArrayAdapter<Vendor> vendorAdapter;
     public String title;
     public HashMap<String, Drawable> icons; //Сами иконки в памяти устройства
     public String description;
-    public int parent_id;
     public int ordering; //Порядок вывода(сортировка)
     public String url;
     HashMap<String, String> icons_href; //Ссылки на иконки
-    //Иконки = normal, big, small
-    private int position_parent_vendor = 0;
 
     public Vendor() {
         super("eshop", "vendor");
@@ -50,7 +47,7 @@ public class Vendor extends Model {
         description = "";
         is_enabled = true;
         parent_id = 0;
-        ordering = -1;
+        ordering = 0;
         url = "";
         icons_href = new HashMap<>();
         icons = new HashMap<>();
@@ -113,8 +110,24 @@ public class Vendor extends Model {
 
     @Override
     public ArrayList getItems() {
-        return orderBy("ordering", "ASC").
+        ArrayList ret = orderBy("ordering", "ASC").
                 getFromDataBase("eshop_vendors");
+
+
+        HashMap<Integer, Model> pre_items = new HashMap<>();
+        for (Object v : ret) {
+            pre_items.put(((Vendor) v).ordering, (Model) v);
+        }
+        ret = makeTypeChildsTree(pre_items);
+        for (Object i : ret) {
+            Vendor item = (Vendor) i;
+            item.title = new String(new char[item.level]).replace("\0", "-") + item.title;
+            items.put(item.original_id, item);
+
+        }
+        vendorAdapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, ret);
+        vendorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return ret;
     }
 
 
@@ -125,10 +138,10 @@ public class Vendor extends Model {
 
     @Override
     public void parseResponseGet(String response) {
-        ArrayList<Model> items = getItems();
+        ArrayList items = getItems();
         HashMap<Integer, Boolean> original_ids = new HashMap<>();
-        for (Model item : items)
-            original_ids.put(item.original_id, true);
+        for (Object item : items)
+            original_ids.put(((Model) item).original_id, true);
         try {
             //Распарсиваем полученную JSON-строку
             JSONObject node_root = new JSONObject(response).getJSONObject("items");
@@ -202,7 +215,8 @@ public class Vendor extends Model {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = vi.inflate(R.layout.view_vendor, null);
         ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
-        ((TextView) v.findViewById(R.id.view_vendor_parent_id)).setText(((Vendor) getItems().get(parent_id)).title);
+        if (parent_id != 0)
+            ((TextView) v.findViewById(R.id.view_vendor_parent_id)).setText(items.get(parent_id).title);
         ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
         ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -213,30 +227,12 @@ public class Vendor extends Model {
         LayoutInflater vi = (LayoutInflater) Core.getInstance().activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         editView = vi.inflate(R.layout.edit_vendor, null);
 
-        //TODO: data -> vendor_array
-        ArrayAdapter<Vendor> adapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, getItems());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        //TODO:Fix this hint in XML and lvl check.
         final Spinner spinner = (Spinner) editView.findViewById(R.id.edit_vendor_parent_id);
-        spinner.setAdapter(adapter);
-        // заголовок
-        spinner.setPrompt("Title");
+        spinner.setAdapter(vendorAdapter);
         // выделяем элемент
-        spinner.setSelection(2);
-        // устанавливаем обработчик нажатия
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                position_parent_vendor = position;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
-
-
+        if (parent_id != 0)
+            spinner.setSelection(vendorAdapter.getPosition(items.get(parent_id)));
 
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_title)).setText(title);
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_description)).setText(description);
@@ -266,12 +262,15 @@ public class Vendor extends Model {
     public String toString() {
         return title;
     }
+
     @Override
     public HashMap parseEditItem(View containerView) {
         HashMap ret = new HashMap();
+        Vendor parent = vendorAdapter.getItem(((Spinner) containerView.findViewById(R.id.edit_vendor_parent_id)).getSelectedItemPosition());
         ret.put("ordering", ordering);
         ret.put("is_enabled", 1);
-        ret.put("parent_id", ((Model) getItems().get(position_parent_vendor)).original_id + "");
+        if (parent != null)
+            ret.put("parent_id", parent.original_id + "");
         ret.put("title", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_title)).getText().toString());
         ret.put("description", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_description)).getText().toString());
         ret.put("url", ((TextInputEditText) containerView.findViewById(R.id.edit_vendor_url)).getText().toString());

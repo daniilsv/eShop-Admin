@@ -7,15 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.ui.activities.ItemActivity;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperAdapter;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperViewHolder;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHolder>
         implements ItemTouchHelperAdapter {
@@ -30,19 +29,21 @@ public class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ItemViewHold
         mRowResId = rowResId;
     }
 
-    public void updateItemInUse() {
+    public boolean updateItemInUse() {
         if (mItemPositionInUse != -1) {
             Model item = mItems.get(mItemPositionInUse).refresh();
             if (item.original_id == -1) {
                 item.deleteFromDB();
                 mItems.remove(mItemPositionInUse);
                 notifyItemRemoved(mItemPositionInUse);
-                return;
+                return true;
             }
             mItems.set(mItemPositionInUse, item);
             notifyItemChanged(mItemPositionInUse);
             mItemPositionInUse = -1;
+            return true;
         }
+        return false;
     }
 
     public ArrayList<Model> getItems() {
