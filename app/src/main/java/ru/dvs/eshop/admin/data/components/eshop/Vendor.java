@@ -190,6 +190,7 @@ public class Vendor extends Model {
 
     public void parseResponseAdd(String response, HashMap<String, String> data) {
         original_id = Integer.parseInt(response.substring(1, response.length() - 1));
+        data.put("original_id", original_id + "");
         DB.update("com_eshop_vendors", id, data);
     }
 
