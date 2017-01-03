@@ -24,4 +24,6 @@
     <string name="query_error_3">Метод не найден</string>
     <string name="query_error_8">Элемент уже удалён</string>
     <string name="query_error_9">---</string>
+
+    <string name= "hint_button_title_edit_vendor">Введите заголовок</string>
 </resources>
