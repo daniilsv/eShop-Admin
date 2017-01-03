@@ -127,7 +127,13 @@ public class Vendor extends Model {
             items.add(item);
 
         }
-        vendorAdapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, ret);
+        ArrayList<Vendor> adapterList = new ArrayList<>();
+        Vendor root = new Vendor();
+        root.title = "-- Root Vendor --";//TODO: Fix it
+        root.original_id = 0;
+        adapterList.add(root);
+        adapterList.addAll(items);
+        vendorAdapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, adapterList);
         vendorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return items;
     }
@@ -191,6 +197,7 @@ public class Vendor extends Model {
 
     public void parseResponseAdd(String response, HashMap<String, String> data) {
         original_id = Integer.parseInt(response.substring(1, response.length() - 1));
+        items_map.put(original_id, this);
         data.put("original_id", original_id + "");
         DB.update("com_eshop_vendors", id, data);
     }
@@ -218,7 +225,7 @@ public class Vendor extends Model {
         View v = vi.inflate(R.layout.view_vendor, null);
         ((TextView) v.findViewById(R.id.view_vendor_title)).setText(title);
         if (parent_id != 0)
-            ((TextView) v.findViewById(R.id.view_vendor_parent_id)).setText(items.get(parent_id).title);
+            ((TextView) v.findViewById(R.id.view_vendor_parent_id)).setText(items_map.get(parent_id).title);
         ((TextView) v.findViewById(R.id.view_vendor_description)).setText(description);
         ((TextView) v.findViewById(R.id.view_vendor_url)).setText(url);
         ((ViewGroup) insertPointView).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -234,7 +241,7 @@ public class Vendor extends Model {
         spinner.setAdapter(vendorAdapter);
         // выделяем элемент
         if (parent_id != 0)
-            spinner.setSelection(vendorAdapter.getPosition(items.get(parent_id)));
+            spinner.setSelection(vendorAdapter.getPosition(items_map.get(parent_id)));
 
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_title)).setText(title);
         ((TextInputEditText) editView.findViewById(R.id.edit_vendor_description)).setText(description);

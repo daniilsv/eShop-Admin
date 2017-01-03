@@ -34,4 +34,6 @@
     <string name="query_error_m2">Connection error</string>
     <string name="query_error_m3">Error response parsing</string>
     <string name="query_error_null">Function error</string>
+
+    <string name="hint_button_title_edit_vendor">Enter title first</string>
 </resources>
