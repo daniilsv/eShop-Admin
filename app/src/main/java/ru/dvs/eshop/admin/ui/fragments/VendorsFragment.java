@@ -69,7 +69,7 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onResume() {
         super.onResume();
-        if (adapter.updateItemInUse())
+        if (items.size() == 0 || adapter.updateItemInUse())
             onRefresh();
     }
 
@@ -84,6 +84,11 @@ public class VendorsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                         onItemsLoadComplete();
                     }
                 });
+            }
+        }, new Function() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }

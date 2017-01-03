@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import ru.dvs.eshop.R;
 import ru.dvs.eshop.admin.Core;
 import ru.dvs.eshop.admin.data.components.Model;
@@ -80,7 +79,6 @@ public class ItemViewFragment extends Fragment {
                 item.deleteFromSite(item.original_id, new Function() {
                     @Override
                     public void run() {
-                        Core.makeToast("Successfully deleted. Drag to update plz.", false);
                         getActivity().finish();
                     }
                 }, new Function() {
@@ -100,7 +98,7 @@ public class ItemViewFragment extends Fragment {
                 item.setFieldOnSite("is_enabled", (!item.is_enabled) ? "1" : "0", new Function() {
                     @Override
                     public void run() {
-                        Core.makeToast("Changed visible", false);
+                        Core.makeToast("Changed visible", false);//TODO: Make this by resources
                         item.is_enabled = !item.is_enabled;
                     }
                 }, null);

@@ -31,7 +31,8 @@ import java.util.Set;
  * Производитель
  */
 public class Vendor extends Model {
-    public static HashMap<Integer, Vendor> items = new HashMap<>();
+    public static ArrayList<Vendor> items = new ArrayList<>();
+    public static HashMap<Integer, Vendor> items_map = new HashMap<>();
     //Иконки = normal, big, small
     private static ArrayAdapter<Vendor> vendorAdapter;
     public String title;
@@ -113,7 +114,7 @@ public class Vendor extends Model {
         ArrayList ret = orderBy("ordering", "ASC").
                 getFromDataBase("eshop_vendors");
 
-
+        items = new ArrayList<>();
         HashMap<Integer, Model> pre_items = new HashMap<>();
         for (Object v : ret) {
             pre_items.put(((Vendor) v).ordering, (Model) v);
@@ -122,12 +123,13 @@ public class Vendor extends Model {
         for (Object i : ret) {
             Vendor item = (Vendor) i;
             item.title = new String(new char[item.level]).replace("\0", "-") + item.title;
-            items.put(item.original_id, item);
+            items_map.put(item.original_id, item);
+            items.add(item);
 
         }
         vendorAdapter = new ArrayAdapter<Vendor>(Core.getInstance().context, android.R.layout.simple_spinner_item, ret);
         vendorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        return ret;
+        return items;
     }
 
 
@@ -138,10 +140,9 @@ public class Vendor extends Model {
 
     @Override
     public void parseResponseGet(String response) {
-        ArrayList items = getItems();
         HashMap<Integer, Boolean> original_ids = new HashMap<>();
-        for (Object item : items)
-            original_ids.put(((Model) item).original_id, true);
+        for (Vendor item : items)
+            original_ids.put(item.original_id, true);
         try {
             //Распарсиваем полученную JSON-строку
             JSONObject node_root = new JSONObject(response).getJSONObject("items");
