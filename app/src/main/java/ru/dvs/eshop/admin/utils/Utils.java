@@ -28,4 +28,9 @@ public class Utils {
         }
         return false;
     }
+
+    public static String strRepeat(String str, int count) {
+        return new String(new char[count]).replace("\0", str);
+    }
+
 }

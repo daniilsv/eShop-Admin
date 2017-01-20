@@ -1,31 +1,28 @@
 package ru.dvs.eshop.admin.data.network;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import ru.dvs.eshop.admin.Core;
+import ru.dvs.eshop.admin.data.Site;
 import ru.dvs.eshop.admin.utils.Utils;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 //Удобный класс скачивания файла с сайта на устройство
 public class FileSendQuery extends AsyncTask<Void, Void, Void> {
     protected String response = "";
-    private String mSite;
+    private Site mSite;
     private String mController;
     private String mSourcePath;
     private String mType;
     private int mId;
     private String mField;
+    private Context mContext;
 
-    public FileSendQuery(String site, String controller, String sourcePath, String type, int id, String field) {
+    public FileSendQuery(Context context, Site site, String controller, String sourcePath, String type, int id, String field) {
+        mContext = context;
         mSite = site;
         mController = controller;
         mSourcePath = sourcePath;
@@ -40,13 +37,13 @@ public class FileSendQuery extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        if (!Utils.hasConnection(Core.getInstance().context)) {
+        if (!Utils.hasConnection(mContext)) {
             response = "-1";//Ошибка. Нет подключения
             showErrorMsg();
             Log.e("PostQuery", "mResponse = " + response);
             return null;
         }
-        response = uploadFile(mSite + "/" + mController + "/upload_file", mSourcePath);
+        response = uploadFile(mSite.host + "/" + mController + "/upload_file", mSourcePath);
         return null;
     }
 
@@ -130,9 +127,6 @@ public class FileSendQuery extends AsyncTask<Void, Void, Void> {
             dos.flush();
             dos.close();
 
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-//TODO:ERROR ex.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
 //TODO:ERROR ex.getMessage();

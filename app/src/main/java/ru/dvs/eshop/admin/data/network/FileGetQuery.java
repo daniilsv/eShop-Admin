@@ -1,6 +1,8 @@
 package ru.dvs.eshop.admin.data.network;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import ru.dvs.eshop.admin.utils.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -8,15 +10,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.utils.Utils;
-//Удобный класс скачивания файла с сайта на устройство
 public class FileGetQuery extends AsyncTask<Void, Void, Void> {
     public File result;
     private String mUrl;
+    private Context mContext;
 
-    public FileGetQuery(String _url, String destination) {
-        mUrl = _url;
+    public FileGetQuery(Context context, String url, String destination) {
+        mContext = context;
+        mUrl = url;
         String r = "";
         String t[] = destination.split("/");
 
@@ -29,7 +30,7 @@ public class FileGetQuery extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        if (!Utils.hasConnection(Core.getInstance().context))
+        if (!Utils.hasConnection(mContext))
             return null;
         try {
             mUrl = (mUrl.contains("https://") ? "https://" : "http://") + mUrl.replaceAll("\\s+|http://|https://", "");

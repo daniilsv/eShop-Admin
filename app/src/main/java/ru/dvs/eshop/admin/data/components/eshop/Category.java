@@ -16,24 +16,30 @@ import ru.dvs.eshop.admin.data.components.ParentableModel;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class Vendor extends ParentableModel {
+public class Category extends ParentableModel {
     public int ordering = 0;
     public String description = null;
     public String url = null;
+    public String metaKeys = null;
+    public String metaDesc = null;
+    public String tpl = null;
     private HashMap<String, String> iconHrefs = null;
 
-    public Vendor() {
-        super("eshop", "vendor", "com_eshop_vendors");
+    private Category() {
+        super("eshop", "category", "com_eshop_categories");
     }
 
-    public Vendor(Context context) {
-        super("eshop", "vendor", "com_eshop_vendors");
+    public Category(Context context) {
+        super("eshop", "category", "com_eshop_categories");
         setContext(context);
         title = "";
         description = "";
         isEnabled = true;
         ordering = 0;
         url = "";
+        metaKeys = "";
+        metaDesc = "";
+        tpl = "";
         iconHrefs = new HashMap<>();
     }
 
@@ -44,9 +50,11 @@ public class Vendor extends ParentableModel {
     @Override
     public HashMap getHashMap() {
         HashMap<String, Object> ret = new ObjectMapper().convertValue(new Data(this), HashMap.class);
+        ret.remove("title_");
         return ret;
     }
 
+    @Override
     public Model parseCursorFromDB(Cursor cursor) {
         return new Data(cursor).item;
     }
@@ -59,7 +67,7 @@ public class Vendor extends ParentableModel {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data extends Model.Data {
         @JsonIgnore
-        public Vendor mItem;
+        public Category mItem;
 
         @JsonProperty("original_id")
         int originalId;
@@ -71,6 +79,11 @@ public class Vendor extends ParentableModel {
         int level;
         String title;
         String description;
+        @JsonProperty("meta_keys")
+        String metaKeys;
+        @JsonProperty("meta_desc")
+        String metaDesc;
+        String tpl;
         String url;
         @JsonProperty("icon")
         HashMap<String, String> iconHrefs;
@@ -83,14 +96,20 @@ public class Vendor extends ParentableModel {
                     @JsonProperty("level") int level,
                     @JsonProperty("title") String title,
                     @JsonProperty("description") String description,
+                    @JsonProperty("meta_keys") String metaKeys,
+                    @JsonProperty("meta_desc") String metaDesc,
+                    @JsonProperty("tpl") String tpl,
                     @JsonProperty("icon") Object icon,
                     @JsonProperty("url") String url) {
-            mItem = new Vendor();
+            mItem = new Category();
             setItemVar("originalId", originalId);
             setItemVar("isEnabled", isEnabled.equals("1"));
             setItemVar("ordering", ordering);
             setItemVar("parentId", parentId);
             setItemVar("level", level);
+            setItemVar("metaKeys", metaKeys);
+            setItemVar("metaDesc", metaDesc);
+            setItemVar("tpl", tpl);
             setItemVar("title", title);
             setItemVar("description", description);
             setItemVar("url", url);
@@ -105,13 +124,16 @@ public class Vendor extends ParentableModel {
             item = mItem;
         }
 
-        Data(Vendor item) {
+        Data(Category item) {
             mItem = item;
             setVarByItem("originalId");
             setVarByItem("isEnabled");
             setVarByItem("ordering");
             setVarByItem("parentId");
             setVarByItem("level");
+            setVarByItem("metaKeys");
+            setVarByItem("metaDesc");
+            setVarByItem("tpl");
             setVarByItem("title");
             setVarByItem("description");
             setVarByItem("url");
@@ -120,13 +142,16 @@ public class Vendor extends ParentableModel {
 
         Data(Cursor cursor) {
             this.cursor = cursor;
-            mItem = new Vendor();
+            mItem = new Category();
             setItemVar("local_id", cursorGetInt("id"));
             setItemVar("originalId", cursorGetInt("original_id"));
             setItemVar("isEnabled", cursorGetInt("is_enabled") == 1);
             setItemVar("ordering", cursorGetInt("ordering"));
             setItemVar("parentId", cursorGetInt("parent_id"));
             setItemVar("level", cursorGetInt("level"));
+            setItemVar("metaKeys", cursorGetString("meta_keys"));
+            setItemVar("metaDesc", cursorGetString("meta_desc"));
+            setItemVar("tpl", cursorGetString("tpl"));
             setItemVar("title", cursorGetString("title"));
             setItemVar("description", cursorGetString("description"));
             setItemVar("url", cursorGetString("url"));
@@ -135,6 +160,14 @@ public class Vendor extends ParentableModel {
 
         public String getIs_enabled() {
             return isEnabled ? "1" : "0";
+        }
+
+        public String getMeta_keys() {
+            return metaKeys;
+        }
+
+        public String getMeta_desc() {
+            return metaDesc;
         }
 
         protected void setVarByItem(String name) {

@@ -1,10 +1,9 @@
 package ru.dvs.eshop.admin.ui.activities;
 
-import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,47 +12,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import ru.dvs.eshop.admin.R;
+import ru.dvs.eshop.admin.data.Site;
+import ru.dvs.eshop.admin.ui.fragments.TypeListFragment;
 
-import ru.dvs.eshop.R;
-import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.ui.fragments.PaymentTypesFragment;
-import ru.dvs.eshop.admin.ui.fragments.VendorsFragment;
-import ru.dvs.eshop.admin.utils.Permissions;
-
-/**
- * Главная активность приложения
- */
 public class MainActivity extends AppCompatActivity {
-    //private static InfoFragment infoFragment = null;
-
-    private Toolbar toolbar;
-    private DrawerLayout drawer;
-    private Core core;
-    private Fragment curFragment;
-
-    private VendorsFragment vendorsFragment = null;
-    private PaymentTypesFragment paymentTypeFragment = null;
+    public static Site site;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.nav_menu)
+    NavigationView leftNavMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        core = Core.getInstance();
-        core.start(this);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer == null) {
-            return;
-        }
-
-        NavigationView leftNavMenu = (NavigationView) findViewById(R.id.nav_menu);
-        if (leftNavMenu == null) {
-            return;
-        }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -64,30 +44,17 @@ public class MainActivity extends AppCompatActivity {
         leftNavMenu.setNavigationItemSelectedListener(new LeftNavigationMenuItemListener());
 
         View leftNavMenuHeaderView = getLayoutInflater().inflate(R.layout.nav_header_main, leftNavMenu, false);
-        if (leftNavMenuHeaderView != null) {
-            leftNavMenu.addHeaderView(leftNavMenuHeaderView);
+        if (leftNavMenuHeaderView != null) leftNavMenu.addHeaderView(leftNavMenuHeaderView);
 
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
-                !Permissions.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Permissions.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
+        site = new Site();
     }
 
     //При возвращении из другой активности
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       /*
-        if (resultCode != RESULT_OK) {
-            return;
-        }
 
-        switch (requestCode) {
-
-        }
-        */
     }
+
     //При нажатии кнопки назад
     @Override
     public void onBackPressed() {
@@ -100,46 +67,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    //Обновление текуущего фрагмента
-    private void refreshCurFragment() {
-        //if (curFragment == null)
-        //return;
-        //Посылаем в фрагмент команду обновиться
-        //if (curFragment instanceof InfoFragment) {
-        //    infoFragment.refresh();
-        // }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
-        Core.getInstance().setActivity(this);
     }
 
     //При выборе фрагмента в левом меню
     private class LeftNavigationMenuItemListener implements NavigationView.OnNavigationItemSelectedListener {
 
         @Override
-        public boolean onNavigationItemSelected(MenuItem item) {
-
-            curFragment = null;
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Bundle arguments = new Bundle();
+            Fragment curFragment = null;
             switch (item.getItemId()) {
-                case R.id.menu_vendors:
-                    curFragment = (vendorsFragment != null) ? vendorsFragment : (vendorsFragment = new VendorsFragment());
+                case R.id.menu_categories:
+                    curFragment = new TypeListFragment();
+                    arguments.putString("type", "categories");
                     break;
-                case R.id.menu_payment_methods:
-                    curFragment = (paymentTypeFragment != null) ? paymentTypeFragment : (paymentTypeFragment = new PaymentTypesFragment());
+                case R.id.menu_vendors:
+                    curFragment = new TypeListFragment();
+                    arguments.putString("type", "vendors");
                     break;
             }
             //Устанавливаем новый фрагмент
-            if (curFragment != null)
+            if (curFragment != null) {
+                curFragment.setArguments(arguments);
                 getFragmentManager().
                         beginTransaction().
                         setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).
                         replace(R.id.main_frame, curFragment).
                         commit();
-
+            }
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }

@@ -11,123 +11,109 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.dvs.eshop.admin.Core;
+public class DataBase {
 
-/**
- * Класс для удобного пользования Базой данных.
- * Порядок действий:
- * * DB db = DB.getInstance();
- * * db.setContext(context);
- * * db.connect();
- */
-public class DB {
-
-    private static final String LOG_TAG = "DB";
-    private static DB ourInstance = null;
+    private static final String LOG_TAG = "DataBase";
     private SQLiteDatabase db;
-    private Context context;
 
-    private DB() {
-    }
-
-    public static DB getInstance() {
-        if (ourInstance == null)
-            ourInstance = new DB();
-        return ourInstance;
+    public DataBase(Context context) {
+        DBHelper dbHelper = new DBHelper(context);
+        db = dbHelper.getWritableDatabase();
     }
 
     //Добавляет элемент в таблицу
-    public static long insert(String table, Map sm) {
-        if (ourInstance == null)
-            return 0;
+    public long insert(String table, Map sm) {
         ContentValues cv = new ContentValues();
         for (Object o : sm.entrySet()) {
             Map.Entry pair = (Map.Entry) o;
-            cv.put((String) pair.getKey(), (String) pair.getValue());
+            cv.put((String) pair.getKey(), String.valueOf(pair.getValue()));
         }
-        return ourInstance.db.insert(table, null, cv);
+        return db.insert(table, null, cv);
     }
 
     //Обновляет элемент таблицы по ID
-    public static long update(String table, int id, Map sm) {
-        if (ourInstance == null)
-            return 0;
+    public long update(String table, int id, Map sm) {
         ContentValues cv = new ContentValues();
         for (Object o : sm.entrySet()) {
             Map.Entry pair = (Map.Entry) o;
             cv.put("" + pair.getKey(), "" + pair.getValue());
         }
-        return ourInstance.db.update(table, cv, "id=" + id, null);
+        return db.update(table, cv, "id=" + id, null);
     }
 
     //Добавляет или обновляет элемент в таблицу
-    public static void insertOrUpdate(String table, String where, HashMap<String, String> map) {
-        Cursor bd_item = DB.query(table, null, where, null, null, null, null);
+    public void insertOrUpdate(String table, String where, HashMap<String, String> map) {
+        Cursor bd_item = query(table, null, where, null, null, null, null);
         if (bd_item != null && bd_item.moveToFirst()) {//Элемент в таблице есть - обновляем данные
             update(table, bd_item.getInt(bd_item.getColumnIndex("id")), map);
+            bd_item.close();
         } else {//Элемента в таблиц нет - добавляем его
             insert(table, map);
         }
     }
 
     //Удаляет по запросу элемент из таблицы
-    public static int delete(String table, String whereClause, String[] whereArgs) {
-        if (ourInstance == null)
-            return 0;
-        return ourInstance.db.delete(table, whereClause, whereArgs);
+    public int delete(String table, String whereClause, String[] whereArgs) {
+        return db.delete(table, whereClause, whereArgs);
     }
 
     //Поучает Cursor по запросу из таблицы
     @Nullable
-    public static Cursor query(String table, String[] columns, String selection,
-                               String[] selectionArgs, String groupBy, String having,
-                               String orderBy) {
-
-        if (ourInstance == null)
-            return null;
+    public Cursor query(String table, String[] columns, String selection,
+                        String[] selectionArgs, String groupBy, String having,
+                        String orderBy) {
         if (orderBy == null)
             orderBy = "id DESC";
-        return ourInstance.db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
+        return db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
     //Получает кол-во элементов в таблице по запросу
-    public static int getCount(String table, String where) {
-        if (ourInstance == null)
-            return 0;
-        Cursor c = ourInstance.db.query(table, null, where, null, null, null, null);
+    public int getCount(String table, String where) {
+        Cursor c = db.query(table, null, where, null, null, null, null);
         int ret = c.getCount();
         c.close();
         return ret;
     }
 
     //Удаляет элемент по ID из таблицы
-    public static int removeById(String table, int id) {
-        if (ourInstance == null)
-            return 0;
-        return ourInstance.db.delete(table, "id = " + id, null);
+    public int removeById(String table, int id) {
+        return db.delete(table, "id = " + id, null);
     }
 
-    //Устанавливаем контекст
-    public void setContext(Context _context) {
-        context = _context;
-    }
-
-    //Подключаемся к БД
-    public void connect() {
-        DBHelper dbHelper = new DBHelper(context);
-        db = dbHelper.getWritableDatabase();
+    public void close() {
+        try {
+            db.endTransaction();
+        } catch (IllegalStateException ignored) {
+            db.close();
+        }
+        db = null;
     }
 
     private class DBHelper extends SQLiteOpenHelper {
 
         DBHelper(Context context) {
-            super(context, "appEShopAdmin", null, Core.versionI);
+            super(context, "eshop_db", null, 1);
         }
 
         //При создании базы данных
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.d(LOG_TAG, "--- onCreate database ---");
+
+            Log.d(LOG_TAG, "--- Create com_eshop_vendors");
+            db.execSQL("CREATE TABLE com_eshop_vendors (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "original_id INTEGER NOT NULL," +
+                    "parent_id INTEGER NOT NULL," +
+                    "level INTEGER NOT NULL," +
+                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
+                    "title TEXT DEFAULT NULL," +
+                    "icon TEXT," +
+                    "description TEXT," +
+                    "url TEXT DEFAULT NULL," +
+                    "ordering INTEGER DEFAULT NULL);" +
+                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_vendors (id, original_id);"
+            );
             ////////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_categories");
             db.execSQL("CREATE TABLE com_eshop_categories (" +
@@ -136,6 +122,7 @@ public class DB {
                     "is_enabled INTEGER NOT NULL DEFAULT '1'," +
                     "title TEXT NOT NULL," +
                     "ordering INTEGER DEFAULT NULL," +
+                    "level INTEGER NOT NULL," +
                     "parent_id INTEGER DEFAULT NULL," +
                     "description TEXT," +
                     "icon TEXT," +
@@ -145,7 +132,8 @@ public class DB {
                     "tpl TEXT DEFAULT NULL);" +
                     "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_categories (id, original_id);"
             );
-            ///////////////////Мы сделали категорию шаблон категорий, чтобы когда вы кодили категорию... всё, договорились, теперь всё ясно!(нет)
+            /*
+            ///////////////////
             Log.d(LOG_TAG, "--- Create com_eshop_chars");
             db.execSQL("CREATE TABLE com_eshop_chars (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -216,27 +204,13 @@ public class DB {
                     "options TEXT NOT NULL);" +
                     "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_payment_types (id, original_id);"
             );
-            ////////////////////
-            Log.d(LOG_TAG, "--- Create com_eshop_vendors");
-            db.execSQL("CREATE TABLE com_eshop_vendors (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "original_id INTEGER NOT NULL," +
-                    "parent_id INTEGER NOT NULL," +
-                    "is_enabled INTEGER NOT NULL DEFAULT '1'," +
-                    "title TEXT DEFAULT NULL," +
-                    "icon TEXT," +
-                    "description TEXT," +
-                    "url TEXT DEFAULT NULL," +
-                    "ordering INTEGER DEFAULT NULL);" +
-                    "CREATE INDEX IF NOT EXISTS uniq ON com_eshop_vendors (id, original_id);"
-            );
-
+*/
         }
 
         //При обновлении приложения
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS appEShopAdmin");
+            db.execSQL("DROP TABLE IF EXISTS eshop_db");
             onCreate(db);
         }
     }

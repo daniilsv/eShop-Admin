@@ -1,39 +1,8 @@
 <resources>
-    <string name="app_name" translatable="false">eShop - Administrator</string>
-    <string name="host">Host</string>
-    <string name="email" translatable="false">eMail</string>
-    <string name="password">Password</string>
-    <string name="enter">Enter</string>
-    <string name="enter_success">Operation Successful</string>
-    <string name="enter_wrong_pass">Login or password is incorrect</string>
-    <string name="enter_error">Connection error</string>
-    <string name="no_more_content">There is no more content</string>
-    <string name="navigation_drawer_open">Open</string>
-    <string name="navigation_drawer_close">Close</string>
-    <string name="enter_failed">Operation Failed</string>
-    <string name="enter_wait">Wait for answer</string>
-    <string name="no_internet">No connection to the Internet</string>
-    <string name="action_disable_drag">Disable drag</string>
-    <string name="action_enable_drag">Enable drag</string>
-    <string name="start_ping_failed">Sorry, but it seems that web site is down</string>
-    <string name="start_wait_for_token">Yay! Ask admin to activate your token</string>
-    <string name="start_login_failed">Login or password is incorrect. Try again</string>
-    <string name="start_success">And now you can use this app</string>
+    <string name="app_name">eShop-Administrator</string>
 
-    <string name="query_error_1">Wrong request</string>
-    <string name="query_error_2">Controller not found</string>
-    <string name="query_error_3">Method not found</string>
-    <string name="query_error_4">Login incorrect</string>
-    <string name="query_error_5">Token is not activated</string>
-    <string name="query_error_6">Token is active</string>
-    <string name="query_error_7">Token is blocked</string>
-    <string name="query_error_8">Element is deleted</string>
-    <string name="query_error_9">---</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="query_error_m1">No connection</string>
-    <string name="query_error_m2">Connection error</string>
-    <string name="query_error_m3">Error response parsing</string>
-    <string name="query_error_null">Function error</string>
-
-    <string name="hint_button_title_edit_vendor">Enter title first</string>
+    <string name="action_settings">Settings</string>
 </resources>

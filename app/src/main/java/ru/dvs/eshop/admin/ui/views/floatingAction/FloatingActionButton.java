@@ -3,36 +3,22 @@ package ru.dvs.eshop.admin.ui.views.floatingAction;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.graphics.Rect;
-import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.*;
 import android.graphics.drawable.ShapeDrawable.ShaderFactory;
-import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+import android.support.annotation.*;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import ru.dvs.eshop.admin.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import ru.dvs.eshop.R;
 
 public class FloatingActionButton extends ImageButton {
 

@@ -1,235 +1,143 @@
 package ru.dvs.eshop.admin.data.components;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.dvs.eshop.admin.Core;
-import ru.dvs.eshop.admin.data.DB;
+import ru.dvs.eshop.admin.data.DataBase;
 import ru.dvs.eshop.admin.data.Site;
-import ru.dvs.eshop.admin.data.network.FileGetQuery;
 import ru.dvs.eshop.admin.data.network.PostQuery;
-import ru.dvs.eshop.admin.utils.Function;
+import ru.dvs.eshop.admin.ui.activities.MainActivity;
+import ru.dvs.eshop.admin.utils.Callback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Model {
+public abstract class Model {
     public final String controller;
     public final String type;
+    public final String table;
     public final Site site;
-    public int id;
-    public int original_id;
-    public int parent_id;
-    public int level;
-    public boolean is_enabled;
-    protected View editView;
-    protected String imageToSave;
+    public int localId;
+    public int originalId;
+    public boolean isEnabled;
+    public String title;
+    private Context mContext = null;
     private String mWhere = null;
     private String mOrder = null;
-    private ArrayList<Model> mTmpArray = new ArrayList<>();
 
-    public Model(String _controller, String _type) {
-        controller = _controller;
-        type = _type;
-        site = Core.getInstance().site;
+    public Model(String controller, String type, String table) {
+        this.controller = controller;
+        this.type = type;
+        this.table = table;
+        this.site = MainActivity.site;
+        this.localId = 0;
+        this.originalId = 0;
     }
 
-    protected Object newInstance(Cursor c) {
-        return null;
+    public Model(String controller, String type, String table, int localId, int originalId) {
+        this.controller = controller;
+        this.type = type;
+        this.table = table;
+        this.site = MainActivity.site;
+        this.localId = localId;
+        this.originalId = originalId;
     }
 
-    public void getFromSite(HashMap<String, String> additional, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "get." + type) {
+    protected void setContext(Context context) {
+        mContext = context;
+    }
+
+    public void queryItemsFromSite(final HashMap<String, String> additional, Callback.ISuccessError callback) {
+        PostQuery task = new PostQuery(mContext, site, controller, "get." + type) {
             @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
+            public void onSuccess() {
+                try {
+                    Model item;
+                    DataBase db = new DataBase(mContext);
+
+                    if (mResponse.opt("count") == null) {
+                        item = parseItemByJson(mResponse.getJSONObject("item").toString());
+                        HashMap map = item.getHashMap();
+                        db.insertOrUpdate(table, "original_id=" + item.originalId, map);
+                    } else {
+                        JSONObject items = mResponse.getJSONObject("items");
+                        Iterator<String> iterator = items.keys();
+                        while (iterator.hasNext()) {
+                            item = parseItemByJson(items.getJSONObject(iterator.next()).toString());
+                            HashMap map = item.getHashMap();
+                            db.insertOrUpdate(table, "original_id=" + item.originalId, map);
+                        }
+                    }
+                    db.close();
+                } catch (JSONException ignored) {
                 }
-                parseResponseGet(response);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
+            }
+
+            @Override
+            public void onError() {
+
             }
         };
         if (additional != null)
             for (Map.Entry o : additional.entrySet()) {
                 task.put((String) o.getKey(), (String) o.getValue());
             }
+        if (callback != null)
+            task.setCallback(callback);
         task.execute();
     }
 
-    public void getFromSite(HashMap<String, String> additional, final Function callback) {
-        getFromSite(additional, callback, callback);
-    }
+    public ArrayList<Model> getItems() {
+        ArrayList<Model> items = new ArrayList<>();
+        DataBase db = new DataBase(mContext);
+        if (mOrder == null) orderBy("ordering", "ASC");
+        Cursor cursor = db.query(table, null, mWhere, null, null, null, mOrder);
 
-    public void parseResponseGet(String response) {
-    }
-
-    public void editOnSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "edit." + type) {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
-                }
-                parseResponseEdit(response, data);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
-            }
-        };
-        task.put("what", type);
-        task.put("id", original_id + "");
-        task.put("data", data);
-        task.execute();
-    }
-
-    public void editOnSite(HashMap<String, String> data, final Function callback) {
-        editOnSite(data, callback, callback);
-    }
-
-    public void parseResponseEdit(String response, HashMap<String, String> data) {
-    }
-
-    public void setFieldOnSite(String field, String value, Function callbackSuccess, Function callbackFailed) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put(field, value);
-        editOnSite(map, callbackSuccess, callbackFailed);
-    }
-
-    public void setFieldOnSite(String field, String value, Function callback) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put(field, value);
-        editOnSite(map, callback, callback);
-    }
-
-    public void addToSite(final HashMap<String, String> data, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "add." + type) {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
-                }
-                parseResponseAdd(response, data);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
-            }
-        };
-        task.put("data", data);
-        task.execute();
-    }
-
-    public void addToSite(HashMap<String, String> data, final Function callback) {
-        addToSite(data, callback, callback);
-    }
-
-    public void parseResponseAdd(String response, HashMap<String, String> data) {
-    }
-
-    public void deleteFromSite(int orig_id, final Function callbackSuccess, final Function callbackFailed) {
-        PostQuery task = new PostQuery(site.host, site.token, controller, "delete." + type) {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
-                }
-                parseResponseDelete(response);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
-            }
-        };
-        task.put("id", orig_id + "");
-        task.execute();
-    }
-
-    public void deleteFromSite(int orig_id, final Function callback) {
-        deleteFromSite(orig_id, callback, callback);
-    }
-
-    public void parseResponseDelete(String response) {
-    }
-
-    public void reorderOnSite(final ArrayList arr, final Function callbackSuccess, final Function callbackFailed) {
-        ArrayList<Integer> items = new ArrayList<>();
-        for (Object item : arr) {
-            items.add(((Model) item).original_id);
+        if (cursor == null || !cursor.moveToFirst()) return items;
+        try {
+            do {
+                Model item = parseCursorFromDB(cursor);
+                item.setContext(mContext);
+                items.add(item);
+            } while (cursor.moveToNext());
+        } finally {
+            cursor.close();
+            db.close();
+            clearDataBase();
         }
-        PostQuery task = new PostQuery(site.host, site.token, controller, "reorder." + type) {
-            @Override
-            protected void onPostExecute(Void voids) {
-                if (status != 0) {
-                    if (callbackFailed != null)
-                        callbackFailed.run();
-                    return;
-                }
-                parseResponseReorder(response, arr);
-                if (callbackSuccess != null)
-                    callbackSuccess.run();
-            }
-        };
-        task.put("what", type);
-        task.put("items", items);
-        task.execute();
+        return items;
     }
 
-    public void reorderOnSite(ArrayList arr, final Function callback) {
-        reorderOnSite(arr, callback, callback);
+    public Model getItemById(int localId) {
+        return filter("id=" + localId).getItemFiltered();
     }
 
-    public void parseResponseReorder(String response, ArrayList<Model> arr) {
-    }
+    public Model getItemFiltered() {
+        Model ret = null;
+        DataBase db = new DataBase(mContext);
+        Cursor cursor = db.query(table, null, mWhere, null, null, null, null);
 
-    public HashMap<String, String> getHashMap() {
-        return new HashMap<>();
-    }
-
-    public ArrayList getItems() {
-        return null;
-    }
-
-    public Model getItemById(int id) {
-        return null;
-    }
-
-    public void addToDB() {
-    }
-
-    public void deleteFromDB() {
-    }
-
-    public ArrayList getFromDataBase(String table) {
-        ArrayList ret = new ArrayList();
-        Cursor c = DB.query("com_" + table, null, mWhere, null, null, null, mOrder);
-        if (c == null || !c.moveToFirst()) return ret;
-        do {
-            ret.add(newInstance(c));
-        } while (c.moveToNext());
-        c.close();
-        cleanDB();
+        if (cursor == null || !cursor.moveToFirst()) return null;
+        try {
+            ret = parseCursorFromDB(cursor);
+            ret.setContext(mContext);
+        } finally {
+            cursor.close();
+            db.close();
+            clearDataBase();
+        }
         return ret;
     }
 
-    public Object getByItemId(String table, int id) {
-        Cursor c = DB.query("com_" + table, null, "id=" + id, null, null, null, null);
-        if (c == null || !c.moveToFirst()) return null;
-        cleanDB();
-        Object obj = newInstance(c);
-        c.close();
-        return obj;
-    }
+    public void deleteItem(int localId) {
 
-    public void cleanDB() {
-        mWhere = null;
-        mOrder = null;
     }
 
     public Model filter(String where) {
@@ -242,87 +150,46 @@ public class Model {
         return this;
     }
 
-    public String loadIconsFromSite(String icons, String folder) {
-        HashMap<String, String> icons_href = new HashMap<>();
+    public void clearDataBase() {
+        mWhere = null;
+        mOrder = null;
+    }
+
+    public abstract HashMap getHashMap();
+
+    public Model parseItemByJson(String json) {
         try {
-            if (icons.length() == 2)
-                return new JSONObject(icons_href).toString();
-            JSONObject icon_node = new JSONObject(icons);
-            Iterator<String> icon_keys = icon_node.keys();
-            if (icon_keys != null)
-                while (icon_keys.hasNext()) {
-                    String key = icon_keys.next();
-                    if (key.equals("big") || key.equals("small") || key.equals("normal")) {
-                        String href = "/upload/" + icon_node.getString(key);
-                        icons_href.put(key, href);
-                        String tmp[] = href.split("/");
-                        new FileGetQuery(site.host + href, Core.getStorageDir() + "/icons/" + folder + "/" + tmp[tmp.length - 1]).execute();
-                    }
-                }
-        } catch (JSONException e) {
+            Class dataClass = Class.forName(this.getClass().getName() + "$Data");
+            Data data = (Data) new ObjectMapper().readValue(json, dataClass);
+            return data.item;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return new JSONObject(icons_href).toString();
-    }
-
-    protected ArrayList<Model> makeTypeChildsTree(HashMap<Integer, Model> items) {
-
-        HashMap<Integer, ArrayList<Model>> parent_items = new HashMap<>();
-
-        for (int id : items.keySet()) {
-            Model item = items.get(id);
-            if (parent_items.get(item.parent_id) == null) {
-                ArrayList<Model> t = new ArrayList<>();
-                t.add(item);
-                parent_items.put(item.parent_id, t);
-            } else {
-                ArrayList<Model> t = parent_items.get(item.parent_id);
-                t.add(item);
-                parent_items.put(item.parent_id, t);
-            }
-        }
-        fillTypeChildBranch(parent_items, 0, 0);
-        ArrayList<Model> ret = mTmpArray;
-        mTmpArray = new ArrayList<>();
-
-        return ret;
-
-    }
-
-    private void fillTypeChildBranch(HashMap<Integer, ArrayList<Model>> parent_items, int cur_id, int level) {
-        if (!parent_items.containsKey(cur_id)) {
-            return;
-        }
-        for (Model p_c : parent_items.get(cur_id)) {
-            p_c.level = level;
-            mTmpArray.add(p_c);
-            fillTypeChildBranch(parent_items, p_c.original_id, level + 1);
-        }
-    }
-
-
-    public void fillViewForListItem(View view) {
-    }
-
-    public void fillViewForReadItem(View insertPointView) {
-    }
-
-    public void fillViewForEditItem(View insertPointView) {
-    }
-
-    public void setImageByActivity(String imageUri) {
-    }
-
-    public HashMap parseEditItem(View containerView) {
         return null;
     }
 
-    public void uploadIcon() {
-    }
+    public abstract Model parseCursorFromDB(Cursor cursor);
 
-    public Model refresh() {
-        return getItemById(id);
+    public abstract void fillViewForList(View itemView);
+
+    protected static abstract class Data {
+        @JsonIgnore
+        public Model item;
+        @JsonIgnore
+        protected Cursor cursor;
+
+        protected final int cursorGetInt(String column) {
+            return cursor.getInt(cursor.getColumnIndex(column));
+        }
+
+        protected final String cursorGetString(String column) {
+            return cursor.getString(cursor.getColumnIndex(column));
+        }
+
+        protected abstract void setVarByItem(String name);
+
+        protected abstract void setItemVar(String name, Object value);
     }
 }
-
-

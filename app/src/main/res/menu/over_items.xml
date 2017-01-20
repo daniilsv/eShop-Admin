@@ -2,8 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/add_button"
-        android:icon="@drawable/ic_iconmonstr_plus_2"
-        android:title="+"
-        app:showAsAction="always" />
+            android:id="@+id/refresh_button"
+            android:icon="@android:drawable/ic_menu_rotate"
+            android:title="+"
+            app:showAsAction="always"/>
+    <item
+            android:id="@+id/add_button"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="+"
+            app:showAsAction="always"/>
 </menu>
