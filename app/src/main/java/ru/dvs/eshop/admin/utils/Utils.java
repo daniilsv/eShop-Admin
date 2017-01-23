@@ -3,6 +3,11 @@ package ru.dvs.eshop.admin.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+
+import ru.dvs.eshop.admin.ui.views.FormField;
 
 
 public class Utils {
@@ -33,4 +38,23 @@ public class Utils {
         return new String(new char[count]).replace("\0", str);
     }
 
+    static String toCamelCase(String s) {
+        String[] parts = s.split("_");
+        String camelCaseString = "";
+        for (String part : parts) {
+            camelCaseString = camelCaseString + toProperCase(part);
+        }
+        return camelCaseString;
+    }
+
+    static String toProperCase(String s) {
+        return s.substring(0, 1).toUpperCase() +
+                s.substring(1).toLowerCase();
+    }
+
+    public void generateForm(ViewGroup parent, ArrayList<FormField> form) {
+        for (FormField f : form) {
+            parent.addView(f.getView(parent.getContext()));
+        }
+    }
 }
