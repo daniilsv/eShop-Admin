@@ -2,6 +2,7 @@ package ru.dvs.eshop.admin.data.components;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +10,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import ru.dvs.eshop.admin.data.DataBase;
 import ru.dvs.eshop.admin.data.Site;
+import ru.dvs.eshop.admin.data.network.FileGetQuery;
 import ru.dvs.eshop.admin.data.network.PostQuery;
 import ru.dvs.eshop.admin.ui.activities.MainActivity;
 import ru.dvs.eshop.admin.utils.Callback;
+import ru.dvs.eshop.admin.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +32,8 @@ public abstract class Model {
     public int originalId;
     public boolean isEnabled;
     public String title;
+    public HashMap<String, String> iconHrefs = null;
+    protected HashMap<String, Drawable> iconsLocal = null;
     private Context mContext = null;
     private String mWhere = null;
     private String mOrder = null;
@@ -39,6 +45,7 @@ public abstract class Model {
         this.site = MainActivity.site;
         this.localId = 0;
         this.originalId = 0;
+        iconHrefs = new HashMap<>();
     }
 
     public Model(String controller, String type, String table, int localId, int originalId) {
@@ -48,6 +55,7 @@ public abstract class Model {
         this.site = MainActivity.site;
         this.localId = localId;
         this.originalId = originalId;
+        iconHrefs = new HashMap<>();
     }
 
     protected void setContext(Context context) {
@@ -162,12 +170,25 @@ public abstract class Model {
             Class dataClass = Class.forName(this.getClass().getName() + "$Data");
             Data data = (Data) new ObjectMapper().readValue(json, dataClass);
             return data.item;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void loadIconsFromSite() {
+        if (iconHrefs == null) return;
+        if (new File(Utils.fileName(iconHrefs.get("small"))).exists())
+            return;
+        FileGetQuery fileSmall = new FileGetQuery(mContext, site.host + "" + iconHrefs.get("small"), "images/" + type + "/" + Utils.fileName(iconHrefs.get("small")));
+        FileGetQuery fileNormal = new FileGetQuery(mContext, site.host + "" + iconHrefs.get("normal"), "images/" + type + "/" + Utils.fileName(iconHrefs.get("normal")));
+        FileGetQuery fileBig = new FileGetQuery(mContext, site.host + "" + iconHrefs.get("big"), "images/" + type + "/" + Utils.fileName(iconHrefs.get("big")));
+        try {
+            fileSmall.join();
+            fileNormal.join();
+            fileBig.join();
+        } catch (InterruptedException ignored) {
+        }
     }
 
     public abstract Model parseCursorFromDB(Cursor cursor);

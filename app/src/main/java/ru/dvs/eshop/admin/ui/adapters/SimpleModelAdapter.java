@@ -66,6 +66,11 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
     }
 
     @Override
+    public void onViewRecycled(ItemViewHolder holder) {
+        holder.stopProcesses();
+    }
+
+    @Override
     public void onItemSwiped(int position) {
         mItems.remove(position);
         notifyItemRemoved(position);
@@ -96,6 +101,9 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
         private Context mContext;
         private OnItemViewHolderClickListener mOnItemClickListener = null;
 
+        private Thread loadIconsThread;
+        private Thread loadContentThread;
+
         ItemViewHolder(Context context, View itemView, OnItemViewHolderClickListener onItemClickListener) {
             super(itemView);
             mContext = context;
@@ -115,7 +123,36 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
 
         public void setItem(Model item) {
             mItem = item;
-            mItem.fillViewForList(itemView);
+            if (mItem == null)
+                return;
+
+            //TODO: не срабатывает. исправить.
+            if (mItem.iconHrefs != null && mItem.iconHrefs.size() != 0) {
+                loadIconsThread = new Thread() {
+                    @Override
+                    public void run() {
+                        mItem.loadIconsFromSite();
+                    }
+                };
+                loadIconsThread.start();
+            }
+
+            loadContentThread = new Thread() {
+                @Override
+                public void run() {
+                    mItem.fillViewForList(itemView);
+                }
+            };
+            loadContentThread.start();
+        }
+
+        void stopProcesses() {
+            if (mItem == null)
+                return;
+            if (loadIconsThread != null && loadIconsThread.getState() == Thread.State.RUNNABLE)
+                loadIconsThread.interrupt();
+            if (loadContentThread.getState() == Thread.State.RUNNABLE)
+                loadContentThread.interrupt();
         }
 
         @Override
@@ -128,7 +165,6 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
         public static abstract class OnItemViewHolderClickListener {
             public abstract void onClick(ItemViewHolder itemViewHolder, Model item, View v);
         }
-
 
     }
 }

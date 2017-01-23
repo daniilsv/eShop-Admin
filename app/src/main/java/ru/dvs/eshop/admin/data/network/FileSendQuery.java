@@ -12,7 +12,7 @@ import java.net.URL;
 
 //Удобный класс скачивания файла с сайта на устройство
 public class FileSendQuery extends AsyncTask<Void, Void, Void> {
-    protected String response = "";
+    private String response = "";
     private Site mSite;
     private String mController;
     private String mSourcePath;
@@ -35,7 +35,7 @@ public class FileSendQuery extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected final Void doInBackground(Void... params) {
 
         if (!Utils.hasConnection(mContext)) {
             response = "-1";//Ошибка. Нет подключения
@@ -47,7 +47,7 @@ public class FileSendQuery extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public String uploadFile(String url, String sourcePath) {
+    private String uploadFile(String url, String sourcePath) {
 
         HttpURLConnection conn;
         DataOutputStream dos;

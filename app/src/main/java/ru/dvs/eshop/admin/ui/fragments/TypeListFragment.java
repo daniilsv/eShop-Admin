@@ -24,7 +24,7 @@ import ru.dvs.eshop.admin.utils.Callback;
 
 import java.util.ArrayList;
 
-public class TypeListFragment extends Fragment {
+public class TypeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.save_position_button)
     FloatingActionButton mSaveButton;
     @BindView(R.id.recycler_view)
@@ -41,36 +41,7 @@ public class TypeListFragment extends Fragment {
     private int parentId;
     private ArrayList<Model> items = new ArrayList<>();
     private SimpleModelAdapter mAdapter;
-    SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            swipeRefreshLayout.setRefreshing(true);
-            Callback.ISuccessError callback = new Callback.ISuccessError() {
-                @Override
-                public void onSuccess() {
-                    fillItems(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                }
 
-                @Override
-                public void onError() {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            };
-            Context context = getActivity().getApplicationContext();
-            Model model = null;
-            switch (type) {
-                case "categories":
-                    model = new Category(context);
-                    break;
-                case "vendors":
-                    model = new Vendor(context);
-                    break;
-            }
-            if (model != null)
-                model.queryItemsFromSite(null, callback);
-        }
-    };
 
     SimpleModelAdapter.ItemViewHolder.OnItemViewHolderClickListener onItemClickListener = new SimpleModelAdapter.ItemViewHolder.OnItemViewHolderClickListener() {
         @Override
@@ -115,7 +86,7 @@ public class TypeListFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         ItemTouchHelperCallback callback = new ItemTouchHelperCallback(mAdapter, true, false);
         callback.setOnItemMovedListener(onItemMovedListener);
@@ -146,12 +117,12 @@ public class TypeListFragment extends Fragment {
         }
 
         items = model.getItems();
-        if (!isFromQuery && items.size() == 0) onRefreshListener.onRefresh();
+        if (!isFromQuery && items.size() == 0) onRefresh();
         if (items.size() != 0) {
             mAdapter.setItems(items);
             recyclerView.swapAdapter(mAdapter, false);
-            swipeRefreshLayout.setRefreshing(false);
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -174,7 +145,7 @@ public class TypeListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh_button:
-                onRefreshListener.onRefresh();
+                onRefresh();
                 break;
             case R.id.add_button:
                 break;
@@ -182,4 +153,32 @@ public class TypeListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        Callback.ISuccessError callback = new Callback.ISuccessError() {
+            @Override
+            public void onSuccess() {
+                fillItems(true);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onError() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+        Context context = getActivity().getApplicationContext();
+        Model model = null;
+        switch (type) {
+            case "categories":
+                model = new Category(context);
+                break;
+            case "vendors":
+                model = new Vendor(context);
+                break;
+        }
+        if (model != null)
+            model.queryItemsFromSite(null, callback);
+    }
 }

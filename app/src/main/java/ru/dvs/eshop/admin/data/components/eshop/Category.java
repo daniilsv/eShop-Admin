@@ -23,7 +23,6 @@ public class Category extends ParentableModel {
     public String metaKeys = null;
     public String metaDesc = null;
     public String tpl = null;
-    private HashMap<String, String> iconHrefs = null;
 
     private Category() {
         super("eshop", "category", "com_eshop_categories");
@@ -49,9 +48,7 @@ public class Category extends ParentableModel {
 
     @Override
     public HashMap getHashMap() {
-        HashMap<String, Object> ret = new ObjectMapper().convertValue(new Data(this), HashMap.class);
-        ret.remove("title_");
-        return ret;
+        return new ObjectMapper().convertValue(new Data(this), HashMap.class);
     }
 
     @Override

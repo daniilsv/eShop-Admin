@@ -4,10 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.ViewGroup;
+import ru.dvs.eshop.admin.ui.views.FormField;
 
 import java.util.ArrayList;
-
-import ru.dvs.eshop.admin.ui.views.FormField;
 
 
 public class Utils {
@@ -36,6 +35,11 @@ public class Utils {
 
     public static String strRepeat(String str, int count) {
         return new String(new char[count]).replace("\0", str);
+    }
+
+    public static String fileName(String filePath) {
+        int idx = filePath.replaceAll("\\\\", "/").lastIndexOf("/");
+        return filePath.substring(idx + 1);
     }
 
     static String toCamelCase(String s) {

@@ -64,19 +64,22 @@ public class PostQuery extends AsyncTask<Void, Void, Void> implements Callback.I
             result = sendPOST(mSite.host + "/api/method/" + mController + "." + mMethod, mJsonObj);
 
         parseResult(result);
+        if (mIsError) {
+            onError();
+        } else {
+            onSuccess();
+        }
         return null;
     }
 
     @Override
     protected final void onPostExecute(Void aVoid) {
+        if (mCallback == null)
+            return;
         if (mIsError) {
-            onError();
-            if (mCallback != null)
-                mCallback.onError();
+            mCallback.onError();
         } else {
-            onSuccess();
-            if (mCallback != null)
-                mCallback.onSuccess();
+            mCallback.onSuccess();
         }
     }
 

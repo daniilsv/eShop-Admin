@@ -1,7 +1,6 @@
 package ru.dvs.eshop.admin.data.network;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import ru.dvs.eshop.admin.utils.Utils;
 
 import java.io.BufferedInputStream;
@@ -10,8 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-public class FileGetQuery extends AsyncTask<Void, Void, Void> {
-    public File result;
+public class FileGetQuery extends Thread {
+    public File result = null;
     private String mUrl;
     private Context mContext;
 
@@ -19,8 +18,11 @@ public class FileGetQuery extends AsyncTask<Void, Void, Void> {
         mContext = context;
         mUrl = url;
         String r = "";
+        File appFolder = mContext.getExternalFilesDir(null);
+        if (appFolder == null)
+            return;
+        destination = appFolder.getPath() + "/" + destination;
         String t[] = destination.split("/");
-
         for (int i = 0; i < t.length - 1; i++) {
             r += t[i] + "/";
         }
@@ -29,9 +31,11 @@ public class FileGetQuery extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    public void run() {
+        if (result == null)
+            return;
         if (!Utils.hasConnection(mContext))
-            return null;
+            return;
         try {
             mUrl = (mUrl.contains("https://") ? "https://" : "http://") + mUrl.replaceAll("\\s+|http://|https://", "");
             BufferedInputStream in = new BufferedInputStream(new URL(mUrl).openStream());
@@ -44,6 +48,6 @@ public class FileGetQuery extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return;
     }
 }

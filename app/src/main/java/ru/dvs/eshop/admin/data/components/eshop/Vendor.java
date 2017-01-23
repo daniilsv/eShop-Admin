@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
+import org.json.JSONObject;
 import ru.dvs.eshop.admin.R;
 import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.data.components.ParentableModel;
@@ -20,7 +22,6 @@ public class Vendor extends ParentableModel {
     public int ordering = 0;
     public String description = null;
     public String url = null;
-    private HashMap<String, String> iconHrefs = null;
 
     public Vendor() {
         super("eshop", "vendor", "com_eshop_vendors");
@@ -43,8 +44,7 @@ public class Vendor extends ParentableModel {
 
     @Override
     public HashMap getHashMap() {
-        HashMap<String, Object> ret = new ObjectMapper().convertValue(new Data(this), HashMap.class);
-        return ret;
+        return new ObjectMapper().convertValue(new Data(this), HashMap.class);
     }
 
     public Model parseCursorFromDB(Cursor cursor) {
@@ -59,7 +59,9 @@ public class Vendor extends ParentableModel {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data extends Model.Data {
         @JsonIgnore
-        public Vendor mItem;
+        Vendor mItem;
+        @JsonIgnore
+        HashMap<String, String> iconHrefs;
 
         @JsonProperty("original_id")
         int originalId;
@@ -72,8 +74,7 @@ public class Vendor extends ParentableModel {
         String title;
         String description;
         String url;
-        @JsonProperty("icon")
-        HashMap<String, String> iconHrefs;
+        String icon;
 
         @JsonCreator
         public Data(@JsonProperty("id") int originalId,
@@ -115,7 +116,7 @@ public class Vendor extends ParentableModel {
             setVarByItem("title");
             setVarByItem("description");
             setVarByItem("url");
-            setVarByItem("iconHrefs");
+            icon = new JSONObject(mItem.iconHrefs).toString();
         }
 
         Data(Cursor cursor) {
@@ -130,6 +131,14 @@ public class Vendor extends ParentableModel {
             setItemVar("title", cursorGetString("title"));
             setItemVar("description", cursorGetString("description"));
             setItemVar("url", cursorGetString("url"));
+            mItem.iconHrefs = new HashMap<>();
+            try {
+                JSONObject icon = new JSONObject(cursorGetString("icon"));
+                mItem.iconHrefs.put("small", icon.getString("small"));
+                mItem.iconHrefs.put("normal", icon.getString("normal"));
+                mItem.iconHrefs.put("big", icon.getString("big"));
+            } catch (JSONException ignored) {
+            }
             item = mItem;
         }
 
