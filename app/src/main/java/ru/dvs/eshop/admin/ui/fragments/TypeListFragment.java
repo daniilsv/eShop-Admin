@@ -1,5 +1,6 @@
 package ru.dvs.eshop.admin.ui.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -165,7 +166,10 @@ public class TypeListFragment extends Fragment implements SwipeRefreshLayout.OnR
         Callback.ISuccessError callback = new Callback.ISuccessError() {
             @Override
             public void onSuccess() {
-                getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity();
+                if (activity == null)
+                    return;
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         fillItems(true);
@@ -176,7 +180,10 @@ public class TypeListFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             @Override
             public void onError() {
-                getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity();
+                if (activity == null)
+                    return;
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
