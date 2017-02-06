@@ -4,17 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.dvs.eshop.admin.data.DataBase;
-import ru.dvs.eshop.admin.data.Site;
-import ru.dvs.eshop.admin.data.network.FileGetQuery;
-import ru.dvs.eshop.admin.data.network.PostQuery;
-import ru.dvs.eshop.admin.ui.activities.MainActivity;
-import ru.dvs.eshop.admin.utils.Callback;
-import ru.dvs.eshop.admin.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +17,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import ru.dvs.eshop.admin.data.DataBase;
+import ru.dvs.eshop.admin.data.Site;
+import ru.dvs.eshop.admin.data.network.FileGetQuery;
+import ru.dvs.eshop.admin.data.network.PostQuery;
+import ru.dvs.eshop.admin.data.sevices.MainThread;
+import ru.dvs.eshop.admin.ui.activities.MainActivity;
+import ru.dvs.eshop.admin.utils.Callback;
+import ru.dvs.eshop.admin.utils.Utils;
 
 public abstract class Model {
     public final String controller;
@@ -99,7 +103,7 @@ public abstract class Model {
             }
         if (callback != null)
             task.setCallback(callback);
-        task.execute();
+        MainThread.addQuery(task);
     }
 
     public ArrayList<Model> getItems() {

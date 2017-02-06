@@ -6,13 +6,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
 import ru.dvs.eshop.admin.R;
 import ru.dvs.eshop.admin.data.components.Model;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperAdapter;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperViewHolder;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.ItemViewHolder>
         implements ItemTouchHelperAdapter {
@@ -101,9 +102,6 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
         private Context mContext;
         private OnItemViewHolderClickListener mOnItemClickListener = null;
 
-        private Thread loadIconsThread;
-        private Thread loadContentThread;
-
         ItemViewHolder(Context context, View itemView, OnItemViewHolderClickListener onItemClickListener) {
             super(itemView);
             mContext = context;
@@ -126,33 +124,12 @@ public class SimpleModelAdapter extends RecyclerView.Adapter<SimpleModelAdapter.
             if (mItem == null)
                 return;
 
-            //TODO: не срабатывает. исправить.
-            if (mItem.iconHrefs != null && mItem.iconHrefs.size() != 0) {
-                loadIconsThread = new Thread() {
-                    @Override
-                    public void run() {
-                        mItem.loadIconsFromSite();
-                    }
-                };
-                loadIconsThread.start();
-            }
-
-            loadContentThread = new Thread() {
-                @Override
-                public void run() {
-                    mItem.fillViewForList(itemView);
-                }
-            };
-            loadContentThread.start();
+            mItem.fillViewForList(itemView);
         }
 
         void stopProcesses() {
             if (mItem == null)
                 return;
-            if (loadIconsThread != null && loadIconsThread.getState() == Thread.State.RUNNABLE)
-                loadIconsThread.interrupt();
-            if (loadContentThread.getState() == Thread.State.RUNNABLE)
-                loadContentThread.interrupt();
         }
 
         @Override

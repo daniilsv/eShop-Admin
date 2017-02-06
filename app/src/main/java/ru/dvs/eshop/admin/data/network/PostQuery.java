@@ -1,15 +1,16 @@
 package ru.dvs.eshop.admin.data.network;
 
 import android.content.Context;
-import android.os.AsyncTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.dvs.eshop.admin.data.Site;
-import ru.dvs.eshop.admin.utils.Callback;
-import ru.dvs.eshop.admin.utils.Utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -17,15 +18,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.dvs.eshop.admin.data.Site;
+import ru.dvs.eshop.admin.utils.Callback;
+import ru.dvs.eshop.admin.utils.Utils;
+
 /**
  * Асинхронное подключение к API сайта
  */
-public class PostQuery extends AsyncTask<Void, Void, Void> implements Callback.ISuccessError {
+public class PostQuery extends Thread implements Callback.ISuccessError {
     private final Site mSite;
     private final String mController;
     private final String mMethod;
     private final Context mContext;
-    protected JSONObject mResponse = new JSONObject();
+    protected JSONObject mResponse = null;
     protected boolean mIsError = false;
     protected int mErrorCode = 0;
     protected String mErrorMessage = "";
@@ -42,6 +47,9 @@ public class PostQuery extends AsyncTask<Void, Void, Void> implements Callback.I
             put("api_key", site.token);
     }
 
+    public boolean isEnded() {
+        return mResponse != null;
+    }
 
     public final void put(String a, String b) {
         mJsonObj.put(a, b);
@@ -55,8 +63,12 @@ public class PostQuery extends AsyncTask<Void, Void, Void> implements Callback.I
         mJsonObj.put(a, new JSONArray(b));
     }
 
-    @Override
-    protected final Void doInBackground(Void... voids) {
+    public void run() {
+        doInBackground();
+        onPostExecute();
+    }
+
+    private Void doInBackground() {
         String result;
         if (!Utils.hasConnection(mContext))
             result = "{\"error\":{\"error_code\":-1,\"error_msg\":\"Connection error: No signal\"}}";
@@ -72,8 +84,8 @@ public class PostQuery extends AsyncTask<Void, Void, Void> implements Callback.I
         return null;
     }
 
-    @Override
-    protected final void onPostExecute(Void aVoid) {
+
+    private void onPostExecute() {
         if (mCallback == null)
             return;
         if (mIsError) {

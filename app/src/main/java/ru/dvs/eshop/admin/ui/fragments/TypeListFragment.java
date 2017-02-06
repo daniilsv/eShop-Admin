@@ -8,7 +8,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dvs.eshop.admin.R;
@@ -21,8 +29,6 @@ import ru.dvs.eshop.admin.ui.adapters.SimpleModelAdapter;
 import ru.dvs.eshop.admin.ui.views.floatingAction.FloatingActionButton;
 import ru.dvs.eshop.admin.ui.views.recyclerViewHelpers.ItemTouchHelperCallback;
 import ru.dvs.eshop.admin.utils.Callback;
-
-import java.util.ArrayList;
 
 public class TypeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.save_position_button)
@@ -159,13 +165,23 @@ public class TypeListFragment extends Fragment implements SwipeRefreshLayout.OnR
         Callback.ISuccessError callback = new Callback.ISuccessError() {
             @Override
             public void onSuccess() {
-                fillItems(true);
-                swipeRefreshLayout.setRefreshing(false);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fillItems(true);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
             public void onError() {
-                swipeRefreshLayout.setRefreshing(false);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
             }
         };
         Context context = getActivity().getApplicationContext();
